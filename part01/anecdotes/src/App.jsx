@@ -13,7 +13,11 @@ function App() {
   ];
 
   const [selected, setSelected] = useState(0);
-  const [votes, setVotes] = useState({});
+  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
+
+  const highestIndex = Object.keys(votes).reduce((a, b) =>
+    votes[a] > votes[b] ? a : b
+  );
 
   function generateNextAnecdote() {
     let index;
@@ -24,18 +28,21 @@ function App() {
   }
 
   function storeVote() {
-    setVotes({
-      ...votes,
-      [selected]: votes[selected] ? votes[selected] + 1 : 1,
-    });
+    const copy = [...votes];
+    copy[selected]++;
+    setVotes(copy);
   }
 
   return (
     <>
+      <h1>Anecdote of the day</h1>
       <div>{anecdotes[selected]}</div>
-      <p>has {votes[selected] || 0} votes</p>
+      <p>has {votes[selected]} votes</p>
       <button onClick={storeVote}>vote</button>
       <button onClick={generateNextAnecdote}>next anecdote</button>
+      <h1>Anecdote with most votes</h1>
+      <div>{anecdotes[highestIndex]}</div>
+      <p>has {votes[highestIndex]} votes</p>
     </>
   );
 }
