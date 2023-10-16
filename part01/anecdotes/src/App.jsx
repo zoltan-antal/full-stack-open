@@ -13,6 +13,7 @@ function App() {
   ];
 
   const [selected, setSelected] = useState(0);
+  const [votes, setVotes] = useState({});
 
   function generateNextAnecdote() {
     let index;
@@ -22,9 +23,18 @@ function App() {
     setSelected(index);
   }
 
+  function storeVote() {
+    setVotes({
+      ...votes,
+      [selected]: votes[selected] ? votes[selected] + 1 : 1,
+    });
+  }
+
   return (
     <>
       <div>{anecdotes[selected]}</div>
+      <p>has {votes[selected] || 0} votes</p>
+      <button onClick={storeVote}>vote</button>
       <button onClick={generateNextAnecdote}>next anecdote</button>
     </>
   );
