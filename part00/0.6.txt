@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant Browser
+    participant Server
+
+    Note over Browser: The user submits the form and a new note is pushed to the notes array
+    Note over Browser: The browser executes the event handler that renders the notes
+    Note over Browser: The browser sends a POST request to the server to record the new note
+    Browser->>+Server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    Note over Server: The server stores the submitted data and returns an acknowledgement
+    Server-->>+Browser: 201 Created
+
