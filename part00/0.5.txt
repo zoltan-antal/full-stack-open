@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant Browser
+    participant Server
+
+    Note over Browser: The user visits the page and the browser sends a request to the server
+    Browser->>+Server: GET https://studies.cs.helsinki.fi/exampleapp/spa
+    Server-->>+Browser: 200 OK - HTML document
+    Note over Browser: The browser displays the HTML and sends a GET request to fetch the CSS file that is referenced in the HTML
+    Browser->>+Server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+    Server-->>+Browser: 200 OK - CSS file
+    Note over Browser: The browsers sends another GET request to fetch the JavaScript file referenced in the HTML
+    Browser->>+Server: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+    Server-->>+Browser: 200 OK - JavaScript file
+    Note over Browser: The browser starts executing the JavaScript code that fetches the JSON from the server
+    Browser->>+Server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+    Server-->>+Browser: 200 OK - JSON file
+    Note over Browser: The browser executes the event handler that renders the notes
+

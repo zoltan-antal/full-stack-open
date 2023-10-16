@@ -1,0 +1,21 @@
+ sequenceDiagram
+    participant Browser
+    participant Server
+
+    Note over Browser: The user submits the form and the browser sends a request to the server
+    Browser->>+Server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
+    Note over Server: The server stores the submitted data and the prompts the browser for a refresh of the page
+    Server-->>+Browser: 302 Found - redirect to /exampleapp/notes
+    Note over Browser: The browser reloads the page by submitting a GET request
+    Browser->>+Server: GET https://studies.cs.helsinki.fi/exampleapp/notes
+    Server-->>+Browser: 200 OK - HTML document
+    Note over Browser: The browser displays the HTML and sends a GET request to fetch the CSS file that is referenced in the HTML
+    Browser->>+Server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+    Server-->>+Browser: 200 OK - CSS file
+    Note over Browser: The browsers sends another GET request to fetch the JavaScript file referenced in the HTML
+    Browser->>+Server: GET https://studies.cs.helsinki.fi/exampleapp/main.js
+    Server-->>+Browser: 200 OK - JavaScript file
+    Note over Browser: The browser starts executing the JavaScript code that fetches the JSON from the server
+    Browser->>+Server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+    Server-->>+Browser: 200 OK - JSON file
+    Note over Browser: The browser executes the callback function that renders the notes
