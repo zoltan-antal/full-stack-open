@@ -14,7 +14,20 @@ function App() {
 
   const [selected, setSelected] = useState(0);
 
-  return <div>{anecdotes[selected]}</div>;
+  function generateNextAnecdote() {
+    let index;
+    do {
+      index = Math.floor(Math.random() * anecdotes.length);
+    } while (index === selected);
+    setSelected(index);
+  }
+
+  return (
+    <>
+      <div>{anecdotes[selected]}</div>
+      <button onClick={generateNextAnecdote}>next anecdote</button>
+    </>
+  );
 }
 
 export default App;
