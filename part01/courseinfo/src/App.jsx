@@ -1,23 +1,27 @@
 const App = () => {
-  const course = 'Half Stack application development';
-  const part1 = 'Fundamentals of React';
-  const exercises1 = 10;
-  const part2 = 'Using props to pass data';
-  const exercises2 = 7;
-  const part3 = 'State of a component';
-  const exercises3 = 14;
+  const course = {
+    name: 'Half Stack application development',
+    parts: [
+      {
+        name: 'Fundamentals of React',
+        exercises: 10,
+      },
+      {
+        name: 'Using props to pass data',
+        exercises: 7,
+      },
+      {
+        name: 'State of a component',
+        exercises: 14,
+      },
+    ],
+  };
 
   return (
     <div>
-      <Header course={course} />
-      <Content
-        parts={[
-          { name: part1, count: exercises1 },
-          { name: part2, count: exercises2 },
-          { name: part3, count: exercises3 },
-        ]}
-      />
-      <Total counts={[exercises1, exercises2, exercises3]} />
+      <Header course={course.name} />
+      <Content parts={course.parts} />
+      <Total parts={course.parts} />
     </div>
   );
 };
@@ -25,29 +29,31 @@ const App = () => {
 export default App;
 
 function Header({ course }) {
-  return <p>{course}</p>;
+  return <h1>{course}</h1>;
 }
 
 function Content({ parts }) {
   return (
     <div>
-      <Part name={parts[0].name} count={parts[0].count} />
-      <Part name={parts[1].name} count={parts[1].count} />
-      <Part name={parts[2].name} count={parts[2].count} />
+      <Part name={parts[0].name} exercises={parts[0].exercises} />
+      <Part name={parts[1].name} exercises={parts[1].exercises} />
+      <Part name={parts[2].name} exercises={parts[2].exercises} />
     </div>
   );
 }
 
-function Part({ name, count }) {
+function Part({ name, exercises }) {
   return (
     <p>
-      {name} {count}
+      {name} {exercises}
     </p>
   );
 }
 
-function Total({ counts }) {
+function Total({ parts }) {
   return (
-    <p>Number of exercises {counts.reduce((acc, curr) => acc + curr, 0)}</p>
+    <p>
+      Number of exercises {parts.reduce((acc, curr) => acc + curr.exercises, 0)}
+    </p>
   );
 }
