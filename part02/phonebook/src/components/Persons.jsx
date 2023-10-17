@@ -2,7 +2,10 @@ function Persons({ persons, handleDelete }) {
   return (
     <>
       {persons.map((person) => (
-        <div key={person.id}>
+        <div
+          key={person.id}
+          style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+        >
           <p>
             {person.name} {person.number}
           </p>
