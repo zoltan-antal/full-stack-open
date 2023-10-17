@@ -9,7 +9,9 @@ function Course({ course }) {
           {part.name} {part.exercises}
         </p>
       ))}
-      <p>total of {total} exercises</p>
+      <strong>
+        <p>total of {total} exercises</p>
+      </strong>
     </>
   );
 }
