@@ -45,9 +45,11 @@ const App = () => {
   }
 
   function deletePerson(id) {
-    personService.remove(id).then(() => {
-      setPersons(persons.filter((person) => person.id !== id));
-    });
+    if (confirm(`Delete ${persons.find((person) => person.id === id).name}?`)) {
+      personService.remove(id).then(() => {
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
   }
 
   return (
