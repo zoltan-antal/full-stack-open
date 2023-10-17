@@ -26,22 +26,42 @@ const App = () => {
     if (newName === '') {
       return;
     }
-    if (
-      persons.find(
-        (person) => person.name.toLowerCase() === newName.toLowerCase()
-      )
-    ) {
-      alert(`${newName} is already added to phonebook`);
-      return;
-    }
 
     const newPerson = { name: newName, number: newNumber };
 
-    personService.create(newPerson).then((returnedPerson) => {
-      setPersons([...persons, returnedPerson]);
-      setNewName('');
-      setNewNumber('');
-    });
+    const personExists = persons.find(
+      (person) => person.name.toLowerCase() === newName.toLowerCase()
+    );
+    if (personExists) {
+      if (personExists.number === newNumber) {
+        alert(`${newName} is already added to phonebook`);
+        return;
+      }
+
+      if (
+        confirm(
+          `${newName} is already in the phonebook, replace the old number with a new one?`
+        )
+      ) {
+        personService
+          .update(personExists.id, newPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== personExists.id ? person : returnedPerson
+              )
+            );
+            setNewName('');
+            setNewNumber('');
+          });
+      }
+    } else {
+      personService.create(newPerson).then((returnedPerson) => {
+        setPersons([...persons, returnedPerson]);
+        setNewName('');
+        setNewNumber('');
+      });
+    }
   }
 
   function deletePerson(id) {
