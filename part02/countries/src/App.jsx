@@ -69,11 +69,24 @@ function App() {
         }
 
         return (
-          <ul>
+          <>
             {matches.map((match) => (
-              <li key={match}>{match}</li>
+              <div
+                key={match}
+                style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+              >
+                <p>{match}</p>
+                <button
+                  onClick={() => {
+                    setMatches([match]);
+                    setQuery('');
+                  }}
+                >
+                  Show
+                </button>
+              </div>
             ))}
-          </ul>
+          </>
         );
       })()}
       {(() => {
