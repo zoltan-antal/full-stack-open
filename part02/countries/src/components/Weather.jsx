@@ -5,7 +5,7 @@ function Weather({ weatherData, countryData }) {
         <h2>
           Weather in {countryData ? countryData.capital[0] : weatherData.name}
         </h2>
-        <p>temperate {weatherData.main.temp} Celsius</p>
+        <p>temperature {weatherData.main.temp} Celsius</p>
         <img
           src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
           alt={weatherData.weather.description}
