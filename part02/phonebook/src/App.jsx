@@ -3,12 +3,15 @@ import personService from './services/persons';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
+import Notification from './components/Notification';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
+  const [acknowledgementMessage, setAcknowledgementMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
@@ -53,6 +56,21 @@ const App = () => {
             );
             setNewName('');
             setNewNumber('');
+            setAcknowledgementMessage(`Changed number for ${newPerson.name}`);
+            setTimeout(() => {
+              setAcknowledgementMessage(null);
+            }, 5000);
+          })
+          .catch(() => {
+            setPersons(
+              persons.filter((person) => person.id !== personExists.id)
+            );
+            setErrorMessage(
+              `Information of ${newPerson.name} has already been removed from server`
+            );
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 5000);
           });
       }
     } else {
@@ -60,13 +78,19 @@ const App = () => {
         setPersons([...persons, returnedPerson]);
         setNewName('');
         setNewNumber('');
+        setAcknowledgementMessage(`Added ${newPerson.name}`);
+        setTimeout(() => {
+          setAcknowledgementMessage(null);
+        }, 5000);
       });
     }
   }
 
   function deletePerson(id) {
-    if (confirm(`Delete ${persons.find((person) => person.id === id).name}?`)) {
-      personService.remove(id).then(() => {
+    const selectedPerson = persons.find((person) => person.id === id);
+
+    if (confirm(`Delete ${selectedPerson.name}?`)) {
+      personService.remove(id).finally(() => {
         setPersons(persons.filter((person) => person.id !== id));
       });
     }
@@ -75,6 +99,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={acknowledgementMessage} type={'acknowledgement'} />
+      <Notification message={errorMessage} type={'error'} />
       <Filter filter={filter} setFilter={setFilter} />
       <h2>Add a new</h2>
       <PersonForm
