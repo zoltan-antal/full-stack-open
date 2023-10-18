@@ -36,8 +36,12 @@ function App() {
       )
       .then((response) => {
         const data = response.data;
-        const lat = data.capitalInfo.latlng[0];
-        const lon = data.capitalInfo.latlng[1];
+        const lat = data.capitalInfo.latlng
+          ? data.capitalInfo.latlng[0]
+          : data.latlng[0];
+        const lon = data.capitalInfo.latlng
+          ? data.capitalInfo.latlng[1]
+          : data.latlng[1];
 
         setCountryData(data);
         axios

@@ -3,7 +3,12 @@ function Weather({ weatherData, countryData }) {
     return (
       <>
         <h2>
-          Weather in {countryData ? countryData.capital[0] : weatherData.name}
+          Weather in{' '}
+          {countryData.capitalInfo.latlng
+            ? countryData.capital[0]
+            : weatherData.name
+            ? weatherData.name
+            : countryData.name.common}
         </h2>
         <p>temperature {weatherData.main.temp} Celsius</p>
         <img
