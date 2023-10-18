@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import Weather from './components/Weather';
+import CountryInfo from './components/CountryInfo';
+import Matches from './components/Matches';
 
 function App() {
-  const apiKey = import.meta.env.VITE_API_KEY;
-
   const [query, setQuery] = useState('');
   const [matches, setMatches] = useState([]);
   const [countryData, setCountryData] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
 
+  const apiKey = useRef(import.meta.env.VITE_API_KEY);
   const countryNames = useRef(null);
 
   useEffect(() => {
@@ -40,13 +42,13 @@ function App() {
         setCountryData(data);
         axios
           .get(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
+            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey.current}`
           )
           .then((response) => {
             setWeatherData(response.data);
           });
       });
-  }, [matches]);
+  }, [matches, apiKey]);
 
   function findResults(query) {
     if (!query) {
@@ -74,72 +76,9 @@ function App() {
           }}
         />
       </p>
-      {(() => {
-        if (matches.length > 10) {
-          return <p>Too many matches, specify another filter</p>;
-        }
-
-        if (matches.length === 1) {
-          return null;
-        }
-
-        return (
-          <>
-            {matches.map((match) => (
-              <div
-                key={match}
-                style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
-              >
-                <p>{match}</p>
-                <button
-                  onClick={() => {
-                    setMatches([match]);
-                    setQuery('');
-                  }}
-                >
-                  Show
-                </button>
-              </div>
-            ))}
-          </>
-        );
-      })()}
-      {(() => {
-        if (countryData) {
-          return (
-            <>
-              <h1>{countryData.name.common}</h1>
-              <p>capital {countryData.capital}</p>
-              <p>area {countryData.area}</p>
-              <h3>languages:</h3>
-              <ul>
-                {Object.values(countryData.languages).map((language) => (
-                  <li key={language}>{language}</li>
-                ))}
-              </ul>
-              <img
-                src={countryData.flags.png}
-                alt={`Flag of ${countryData.name.common}`}
-              />
-            </>
-          );
-        }
-      })()}
-      {(() => {
-        if (weatherData) {
-          return (
-            <>
-              <h2>Weather in {countryData.capital[0]}</h2>
-              <p>temperate {weatherData.main.temp} Celsius</p>
-              <img
-                src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
-                alt={weatherData.weather.description}
-              />
-              <p>wind {weatherData.wind.speed} m/s</p>
-            </>
-          );
-        }
-      })()}
+      <Matches matches={matches} setMatches={setMatches} setQuery={setQuery} />
+      <CountryInfo countryData={countryData} />
+      <Weather weatherData={weatherData} countryData={countryData} />
     </>
   );
 }
