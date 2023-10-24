@@ -91,13 +91,24 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: body.number,
   };
 
-  Person.findByIdAndUpdate(request.params.id, person, {
-    new: true,
-    runValidators: true,
-    context: 'query',
-  })
-    .then((updatedPerson) => {
-      response.json(updatedPerson);
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (!person) {
+        return response
+          .status(404)
+          .send({ error: `${body.name} has already been deleted from server` });
+      }
+    })
+    .then(() => {
+      Person.findByIdAndUpdate(request.params.id, person, {
+        new: true,
+        runValidators: true,
+        context: 'query',
+      })
+        .then((updatedPerson) => {
+          response.json(updatedPerson);
+        })
+        .catch((error) => next(error));
     })
     .catch((error) => next(error));
 });

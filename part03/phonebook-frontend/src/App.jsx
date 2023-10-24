@@ -61,13 +61,13 @@ const App = () => {
               setAcknowledgementMessage(null);
             }, 5000);
           })
-          .catch(() => {
-            setPersons(
-              persons.filter((person) => person.id !== personExists.id)
-            );
-            setErrorMessage(
-              `Information of ${newPerson.name} has already been removed from server`
-            );
+          .catch((error) => {
+            if (error.response.status === 404) {
+              setPersons(
+                persons.filter((person) => person.id !== personExists.id)
+              );
+            }
+            setErrorMessage(error.response.data.error);
             setTimeout(() => {
               setErrorMessage(null);
             }, 5000);
