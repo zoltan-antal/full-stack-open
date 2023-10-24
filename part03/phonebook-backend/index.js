@@ -96,7 +96,9 @@ app.put('/api/persons/:id', (request, response, next) => {
       if (!person) {
         return response
           .status(404)
-          .send({ error: `${body.name} has already been deleted from server` });
+          .send({
+            error: `${body.name} has already been deleted from the server`,
+          });
       }
     })
     .then(() => {
