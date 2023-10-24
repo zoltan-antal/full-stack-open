@@ -9,7 +9,7 @@ const Person = require('./models/person');
 app.use(cors());
 app.use(express.static('dist'));
 app.use(express.json());
-morgan.token('body', (request, response) =>
+morgan.token('body', (request) =>
   request.method === 'POST' ? JSON.stringify(request.body) : ' '
 );
 app.use(
@@ -47,7 +47,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((error) => next(error));
@@ -94,11 +94,9 @@ app.put('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then((person) => {
       if (!person) {
-        return response
-          .status(404)
-          .send({
-            error: `${body.name} has already been deleted from the server`,
-          });
+        return response.status(404).send({
+          error: `${body.name} has already been deleted from the server`,
+        });
       }
     })
     .then(() => {
