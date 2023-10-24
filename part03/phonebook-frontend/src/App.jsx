@@ -74,15 +74,23 @@ const App = () => {
           });
       }
     } else {
-      personService.create(newPerson).then((returnedPerson) => {
-        setPersons([...persons, returnedPerson]);
-        setNewName('');
-        setNewNumber('');
-        setAcknowledgementMessage(`Added ${newPerson.name}`);
-        setTimeout(() => {
-          setAcknowledgementMessage(null);
-        }, 5000);
-      });
+      personService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons([...persons, returnedPerson]);
+          setNewName('');
+          setNewNumber('');
+          setAcknowledgementMessage(`Added ${newPerson.name}`);
+          setTimeout(() => {
+            setAcknowledgementMessage(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          setErrorMessage(error.response.data.error);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+        });
     }
   }
 
