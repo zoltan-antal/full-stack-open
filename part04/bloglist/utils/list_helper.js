@@ -9,6 +9,10 @@ const totalLikes = (blogs) => {
 };
 
 const favoriteBlog = (blogs) => {
+  if (blogs.length === 0) {
+    return null;
+  }
+
   const favorite = blogs.reduce(
     (acc, curr) => (curr.likes > acc.likes ? curr : acc),
     blogs[0]
@@ -18,6 +22,10 @@ const favoriteBlog = (blogs) => {
 };
 
 const mostBlogs = (blogs) => {
+  if (blogs.length === 0) {
+    return null;
+  }
+
   const authors = {};
 
   blogs.forEach((blog) => {
@@ -42,6 +50,10 @@ const mostBlogs = (blogs) => {
 };
 
 const mostLikes = (blogs) => {
+  if (blogs.length === 0) {
+    return null;
+  }
+
   const author = blogs.reduce((acc, curr) =>
     curr.likes > acc.likes ? _.pick(curr, ['author', 'likes']) : acc
   ).author;
