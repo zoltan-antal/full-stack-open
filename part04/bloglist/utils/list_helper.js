@@ -17,8 +17,32 @@ const favoriteBlog = (blogs) => {
   return _.pick(favorite, ['title', 'author', 'likes']);
 };
 
+const mostBlogs = (blogs) => {
+  const authors = {};
+
+  blogs.forEach((blog) => {
+    const author = blog.author;
+
+    if (authors[author]) {
+      authors[author]++;
+    } else {
+      authors[author] = 1;
+    }
+  });
+
+  const author = Object.keys(authors).reduce((acc, curr) =>
+    authors[curr] > authors[acc] ? curr : acc
+  );
+
+  return {
+    author: author,
+    blogs: authors[author],
+  };
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
 };
