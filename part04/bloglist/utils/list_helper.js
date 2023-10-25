@@ -30,13 +30,28 @@ const mostBlogs = (blogs) => {
     }
   });
 
-  const author = Object.keys(authors).reduce((acc, curr) =>
-    authors[curr] > authors[acc] ? curr : acc
+  const author = Object.keys(authors).reduce(
+    (acc, curr) => (authors[curr] > authors[acc] ? curr : acc),
+    Object.keys(authors)[0]
   );
 
   return {
-    author: author,
+    author,
     blogs: authors[author],
+  };
+};
+
+const mostLikes = (blogs) => {
+  const author = blogs.reduce((acc, curr) =>
+    curr.likes > acc.likes ? _.pick(curr, ['author', 'likes']) : acc
+  ).author;
+
+  return {
+    author,
+    likes: blogs.reduce(
+      (acc, curr) => (curr.author === author ? acc + curr.likes : acc),
+      0
+    ),
   };
 };
 
@@ -45,4 +60,5 @@ module.exports = {
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 };
