@@ -34,7 +34,7 @@ describe('POST', () => {
       title: 'Example title',
       author: 'Example author',
       url: 'example.com',
-      likes: 0,
+      likes: 5,
     };
 
     await api
@@ -48,6 +48,24 @@ describe('POST', () => {
 
     const titles = blogsAtEnd.map((blog) => blog.title);
     expect(titles).toContain(newBlog.title);
+  });
+
+  test('likes default to 0', async () => {
+    const newBlog = {
+      title: 'Example title',
+      author: 'Example author',
+      url: 'example.com',
+    };
+
+    await api.post('/api/blogs').send(newBlog);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    blogsAtEnd.forEach((blog) => {
+      if (blog.title === newBlog.title) {
+        expect(blog.likes).toBeDefined();
+        expect(blog.likes).toBe(0);
+      }
+    });
   });
 });
 
