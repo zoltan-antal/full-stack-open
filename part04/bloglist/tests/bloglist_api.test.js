@@ -67,6 +67,26 @@ describe('POST', () => {
       }
     });
   });
+
+  test('new blog without title gets rejected', async () => {
+    const newBlog = {
+      author: 'Example author',
+      url: 'example.com',
+      likes: 5,
+    };
+
+    await api.post('/api/blogs').send(newBlog).expect(400);
+  });
+
+  test('new blog without url gets rejected', async () => {
+    const newBlog = {
+      title: 'Example title',
+      author: 'Example author',
+      likes: 5,
+    };
+
+    await api.post('/api/blogs').send(newBlog).expect(400);
+  });
 });
 
 afterAll(async () => {
