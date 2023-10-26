@@ -11,15 +11,12 @@ beforeEach(async () => {
 });
 
 describe('GET', () => {
-  test('blogs are returned as JSON', async () => {
-    await api
+  test('correct number of blogs are returned, and as JSON', async () => {
+    const response = await api
       .get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/);
-  });
 
-  test('the correct number of blogs are returned', async () => {
-    const response = await api.get('/api/blogs');
     expect(response.body).toHaveLength(helper.initialBlogs.length);
   });
 
