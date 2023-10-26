@@ -90,7 +90,7 @@ describe('POST', () => {
 });
 
 describe('DELETE', () => {
-  test('deletion of a blog', async () => {
+  test('deleting a blog', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blog = blogsAtStart[0];
 
@@ -101,6 +101,28 @@ describe('DELETE', () => {
 
     const titles = blogsAtEnd.map((blog) => blog.title);
     expect(titles).not.toContain(blog.title);
+  });
+});
+
+describe('PUT', () => {
+  test('updating a blog', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const updatedBlog = blogsAtStart[0];
+    updatedBlog.likes = Math.floor(Math.random() * 100);
+
+    const response = await api
+      .put(`/api/blogs/${updatedBlog.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    expect(response.body.likes).toBe(updatedBlog.likes);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    blogsAtEnd.forEach((blog) => {
+      if (blog.title === updatedBlog.title) {
+        expect(blog).toEqual(updatedBlog);
+      }
+    });
   });
 });
 
