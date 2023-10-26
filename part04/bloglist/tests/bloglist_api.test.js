@@ -28,6 +28,29 @@ describe('GET', () => {
   });
 });
 
+describe('POST', () => {
+  test('new blog can be added', async () => {
+    const newBlog = {
+      title: 'Example title',
+      author: 'Example author',
+      url: 'example.com',
+      likes: 0,
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+
+    const titles = blogsAtEnd.map((blog) => blog.title);
+    expect(titles).toContain(newBlog.title);
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
