@@ -7,11 +7,13 @@ const {
 } = require('../utils/list_helper');
 const { listWithOneBlog, listWithManyBlogs } = require('./blog_data');
 
-test('dummy returns one', () => {
-  const blogs = [];
+describe('dummy', () => {
+  test('dummy returns one', () => {
+    const blogs = [];
 
-  const result = dummy(blogs);
-  expect(result).toBe(1);
+    const result = dummy(blogs);
+    expect(result).toBe(1);
+  });
 });
 
 describe('total likes', () => {
