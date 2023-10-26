@@ -89,6 +89,21 @@ describe('POST', () => {
   });
 });
 
+describe('DELETE', () => {
+  test('deletion of a blog', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blog = blogsAtStart[0];
+
+    await api.delete(`/api/blogs/${blog.id}`).expect(204);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
+
+    const titles = blogsAtEnd.map((blog) => blog.title);
+    expect(titles).not.toContain(blog.title);
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
