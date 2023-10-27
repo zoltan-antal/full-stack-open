@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 require('express-async-errors');
+const loginRouter = require('./controllers/login');
 const blogsRouter = require('./controllers/blogs');
 const usersRouter = require('./controllers/users');
 const middleware = require('./utils/middleware');
@@ -29,6 +30,7 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('tiny'));
 }
 
+app.use('/api/login', loginRouter);
 app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
 
