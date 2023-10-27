@@ -30,7 +30,7 @@ describe('POST', () => {
     expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
   });
 
-  test('user must have username', async () => {
+  test('user without username gets rejected', async () => {
     const usersAtStart = await helper.usersInDb();
 
     const user = {
@@ -44,7 +44,7 @@ describe('POST', () => {
     expect(usersAtEnd).toEqual(usersAtStart);
   });
 
-  test('user must have password', async () => {
+  test('user without password gets rejected', async () => {
     const usersAtStart = await helper.usersInDb();
 
     const user = {
@@ -58,7 +58,7 @@ describe('POST', () => {
     expect(usersAtEnd).toEqual(usersAtStart);
   });
 
-  test('no duplicate username can be used', async () => {
+  test('user with duplicate username gets rejected', async () => {
     const usersAtStart = await helper.usersInDb();
 
     const user = {
@@ -79,7 +79,7 @@ describe('POST', () => {
     expect(usersAtEnd).toEqual(usersAtStart);
   });
 
-  test('username must be long enough', async () => {
+  test('user with too short username gets rejected', async () => {
     const usersAtStart = await helper.usersInDb();
 
     const user = {
@@ -94,7 +94,7 @@ describe('POST', () => {
     expect(usersAtEnd).toEqual(usersAtStart);
   });
 
-  test('password must be long enough', async () => {
+  test('user with too short password gets rejected', async () => {
     const usersAtStart = await helper.usersInDb();
 
     const user = {
