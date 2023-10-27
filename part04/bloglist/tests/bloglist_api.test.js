@@ -4,6 +4,20 @@ const helper = require('./test_helper');
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
+
+let token;
+beforeAll(async () => {
+  await User.deleteMany({});
+
+  const newUser = {
+    username: 'example',
+    password: 'example',
+  };
+  await api.post('/api/users').send(newUser);
+  const response = await api.post('/api/login').send(newUser);
+  token = response.body.token;
+});
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -39,6 +53,7 @@ describe('POST', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -57,9 +72,13 @@ describe('POST', () => {
       url: 'example.com',
     };
 
-    await api.post('/api/blogs').send(newBlog);
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog);
 
     const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
     blogsAtEnd.forEach((blog) => {
       if (blog.title === newBlog.title) {
         expect(blog.likes).toBeDefined();
@@ -75,7 +94,11 @@ describe('POST', () => {
       likes: 5,
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
   });
 
   test('new blog without url gets rejected', async () => {
@@ -85,19 +108,39 @@ describe('POST', () => {
       likes: 5,
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
   });
 });
 
 describe('DELETE', () => {
   test('deleting a blog', async () => {
     const blogsAtStart = await helper.blogsInDb();
-    const blog = blogsAtStart[0];
 
-    await api.delete(`/api/blogs/${blog.id}`).expect(204);
+    const blog = {
+      title: 'Example title',
+      author: 'Example author',
+      url: 'example.com',
+    };
+
+    const response = await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(blog);
+
+    const blogsAfterAdd = await helper.blogsInDb();
+    expect(blogsAfterAdd).toHaveLength(helper.initialBlogs.length + 1);
+
+    await api
+      .delete(`/api/blogs/${response.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
-    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length);
 
     const titles = blogsAtEnd.map((blog) => blog.title);
     expect(titles).not.toContain(blog.title);
