@@ -21,6 +21,8 @@ blogsRouter.post('/', async (request, response) => {
   });
 
   const savedBlog = await blog.save();
+  user.blogs = [...user.blogs, savedBlog._id];
+  await user.save();
 
   response.status(201).json(savedBlog);
 });
