@@ -30,6 +30,7 @@ const App = () => {
   const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility();
     const returnedBlog = await blogService.create(blogObject);
+    returnedBlog.user = { username: user.username, name: user.name };
     setBlogs([...blogs, returnedBlog]);
     setAcknowledgementMessage(
       `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
