@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import Blog from './components/Blog';
-import blogService from './services/blogs';
 import loginService from './services/login';
+import blogService from './services/blogs';
+import Blog from './components/Blog';
+import Notification from './components/Notification';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -9,6 +10,8 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
+  const [acknowledgementMessage, setAcknowledgementMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -34,6 +37,12 @@ const App = () => {
     const returnedBlog = await blogService.create(blogObject);
     setBlogs([...blogs, returnedBlog]);
     setNewBlog({ title: '', author: '', url: '' });
+    setAcknowledgementMessage(
+      `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+    );
+    setTimeout(() => {
+      setAcknowledgementMessage(null);
+    }, 5000);
   };
 
   const handleBlogChange = (field, event) => {
@@ -50,13 +59,26 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
-    } catch (exception) {}
+      setAcknowledgementMessage('successfully logged in');
+      setTimeout(() => {
+        setAcknowledgementMessage(null);
+      }, 5000);
+    } catch (exception) {
+      setErrorMessage('wrong username or password');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('loggedBloglistUser');
     setUser(null);
     blogService.setToken(null);
+    setAcknowledgementMessage('successfully logged out');
+    setTimeout(() => {
+      setAcknowledgementMessage(null);
+    }, 5000);
   };
 
   const loginForm = () => (
@@ -121,6 +143,11 @@ const App = () => {
     return (
       <div>
         <h2>log in to application</h2>
+        <Notification
+          message={acknowledgementMessage}
+          type={'acknowledgement'}
+        />
+        <Notification message={errorMessage} type={'error'} />
         {loginForm()}
       </div>
     );
@@ -129,6 +156,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={acknowledgementMessage} type={'acknowledgement'} />
+      <Notification message={errorMessage} type={'error'} />
       <p>
         {user.name} logged in <button onClick={handleLogout}>logout</button>
       </p>
