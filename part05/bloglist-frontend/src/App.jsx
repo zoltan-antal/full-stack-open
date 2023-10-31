@@ -91,6 +91,26 @@ const App = () => {
     );
   };
 
+  const handleRemove = async (blogObject) => {
+    if (
+      window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
+    ) {
+      try {
+        await blogService.remove(blogObject.id);
+        setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
+        setAcknowledgementMessage('blog successfully removed');
+        setTimeout(() => {
+          setAcknowledgementMessage(null);
+        }, 5000);
+      } catch (error) {
+        setErrorMessage('unauthorised to remove this blog');
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+      }
+    }
+  };
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -146,7 +166,13 @@ const App = () => {
       {blogs
         .sort((a, b) => (a.likes > b.likes ? -1 : 1))
         .map((blog) => (
-          <Blog key={blog.id} blog={blog} onLike={handleLike} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            user={user}
+            onLike={handleLike}
+            onRemove={handleRemove}
+          />
         ))}
     </div>
   );
