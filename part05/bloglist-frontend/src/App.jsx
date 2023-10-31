@@ -54,7 +54,7 @@ const App = () => {
       setTimeout(() => {
         setAcknowledgementMessage(null);
       }, 5000);
-    } catch (exception) {
+    } catch (error) {
       setErrorMessage('wrong username or password');
       setTimeout(() => {
         setErrorMessage(null);
@@ -70,6 +70,25 @@ const App = () => {
     setTimeout(() => {
       setAcknowledgementMessage(null);
     }, 5000);
+  };
+
+  const handleLike = async (blogObject) => {
+    const updatedBlog = {
+      ...blogObject,
+      likes: blogObject.likes + 1,
+      user: blogObject.user.id,
+    };
+    delete updatedBlog.id;
+
+    const returnedBlog = await blogService.update(blogObject.id, updatedBlog);
+    setBlogs(
+      blogs.map((blog) => {
+        if (blog.id === returnedBlog.id) {
+          return { ...blog, likes: returnedBlog.likes };
+        }
+        return blog;
+      })
+    );
   };
 
   const loginForm = () => (
@@ -125,7 +144,7 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} onLike={handleLike} />
       ))}
     </div>
   );
