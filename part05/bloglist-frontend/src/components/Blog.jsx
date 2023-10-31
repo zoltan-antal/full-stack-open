@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const Blog = ({ blog, onLike }) => {
+const Blog = ({ blog, user, onLike, onRemove }) => {
   const [expanded, setExpanded] = useState(false);
 
   const blogStyle = {
@@ -9,22 +9,31 @@ const Blog = ({ blog, onLike }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
+    '& p': {
+      margin: 0,
+      background: 'red',
+    },
   };
 
   return (
     <div style={blogStyle}>
-      <p>
+      <div>
         {blog.title} {blog.author}{' '}
-        <button onClick={() => setExpanded(!expanded)}>view</button>
-      </p>
+        <button onClick={() => setExpanded(!expanded)}>
+          {expanded ? 'hide' : 'view'}
+        </button>
+      </div>
       {expanded && (
         <>
-          <p>{blog.url}</p>
-          <p>
+          <div>{blog.url}</div>
+          <div>
             likes {blog.likes}{' '}
             <button onClick={() => onLike(blog)}>like</button>
-          </p>
-          <p>{blog.user.name || blog.user.username}</p>
+          </div>
+          <div>{blog.user.name || blog.user.username}</div>
+          {user.username === blog.user.username && (
+            <button onClick={() => onRemove(blog)}>remove</button>
+          )}
         </>
       )}
     </div>
