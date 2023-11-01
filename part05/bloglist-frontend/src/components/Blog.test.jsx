@@ -4,8 +4,18 @@ import userEvent from '@testing-library/user-event';
 import Blog from './Blog';
 
 describe('Blog', () => {
-  test('renders the correct content initially', () => {
-    const blogMock = {
+  let blogMock;
+  let userMock;
+  let onLikeMock;
+  let onRemoveMock;
+
+  let container;
+  let blogElement;
+
+  let user;
+
+  beforeEach(() => {
+    blogMock = {
       title: 'title',
       author: 'author',
       url: 'url',
@@ -15,15 +25,15 @@ describe('Blog', () => {
         name: 'name',
       },
     };
-    const userMock = {
+    userMock = {
       username: 'username',
       name: 'name',
       token: 'token',
     };
-    const onLikeMock = jest.fn();
-    const onRemoveMock = jest.fn();
+    onLikeMock = jest.fn();
+    onRemoveMock = jest.fn();
 
-    const container = render(
+    container = render(
       <Blog
         blog={blogMock}
         user={userMock}
@@ -31,8 +41,12 @@ describe('Blog', () => {
         onRemove={onRemoveMock}
       />
     ).container;
-    const blogElement = container.querySelector('.blog');
+    blogElement = container.querySelector('.blog');
 
+    user = userEvent.setup();
+  });
+
+  test('renders the correct content initially', () => {
     expect(blogElement).toHaveTextContent(blogMock.title);
     expect(blogElement).toHaveTextContent(blogMock.author);
     expect(blogElement).not.toHaveTextContent(blogMock.url);
@@ -41,35 +55,6 @@ describe('Blog', () => {
   });
 
   test('renders the correct content when blog is expanded', async () => {
-    const blogMock = {
-      title: 'title',
-      author: 'author',
-      url: 'url',
-      likes: Math.floor(Math.random() * 100),
-      user: {
-        username: 'username',
-        name: 'name',
-      },
-    };
-    const userMock = {
-      username: 'username',
-      name: 'name',
-      token: 'token',
-    };
-    const onLikeMock = jest.fn();
-    const onRemoveMock = jest.fn();
-
-    const container = render(
-      <Blog
-        blog={blogMock}
-        user={userMock}
-        onLike={onLikeMock}
-        onRemove={onRemoveMock}
-      />
-    ).container;
-    const blogElement = container.querySelector('.blog');
-
-    const user = userEvent.setup();
     const viewButton = screen.getByText('view', { container: blogElement });
     await user.click(viewButton);
 
@@ -81,35 +66,6 @@ describe('Blog', () => {
   });
 
   test('like button calls like handler correctly', async () => {
-    const blogMock = {
-      title: 'title',
-      author: 'author',
-      url: 'url',
-      likes: Math.floor(Math.random() * 100),
-      user: {
-        username: 'username',
-        name: 'name',
-      },
-    };
-    const userMock = {
-      username: 'username',
-      name: 'name',
-      token: 'token',
-    };
-    const onLikeMock = jest.fn();
-    const onRemoveMock = jest.fn();
-
-    const container = render(
-      <Blog
-        blog={blogMock}
-        user={userMock}
-        onLike={onLikeMock}
-        onRemove={onRemoveMock}
-      />
-    ).container;
-    const blogElement = container.querySelector('.blog');
-
-    const user = userEvent.setup();
     const viewButton = screen.getByText('view', { container: blogElement });
     await user.click(viewButton);
     const likeButton = screen.getByText('like', { container: blogElement });
