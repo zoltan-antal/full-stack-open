@@ -80,6 +80,13 @@ describe('Bloglist app', () => {
           .contains('likes')
           .should('include.text', blog.likes + 1);
       });
+
+      it('a blog can be deleted', function () {
+        cy.contains(`${blog.title} ${blog.author}`).parent().as('blog');
+        cy.get('@blog').contains('view').click();
+        cy.get('@blog').contains('remove').click();
+        cy.contains(`${blog.title} ${blog.author}`).should('not.exist');
+      });
     });
   });
 });
