@@ -87,6 +87,20 @@ describe('Bloglist app', () => {
         cy.get('@blog').contains('remove').click();
         cy.contains(`${blog.title} ${blog.author}`).should('not.exist');
       });
+
+      it('only the creator of a blog can see the delete button', function () {
+        cy.contains('logout').click();
+        user = {
+          name: 'Other User',
+          username: 'other',
+          password: 'other',
+        };
+        cy.request('POST', `${Cypress.env('BACKEND')}/users`, user);
+        cy.login({ username: user.username, password: user.password });
+        cy.contains(`${blog.title} ${blog.author}`).parent().as('blog');
+        cy.get('@blog').contains('view').click();
+        cy.get('@blog').contains('remove').should('not.exist');
+      });
     });
   });
 });
