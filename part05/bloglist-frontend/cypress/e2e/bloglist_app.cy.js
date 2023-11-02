@@ -102,5 +102,31 @@ describe('Bloglist app', () => {
         cy.get('@blog').contains('remove').should('not.exist');
       });
     });
+
+    describe('And several blogs exist', function () {
+      let blogs = [];
+
+      beforeEach(function () {
+        const blogCount = Math.floor(Math.random() * 3) + 3;
+        for (let i = 0; i < blogCount; i++) {
+          const blog = {
+            title: `Example title ${i}`,
+            author: `Example author ${i}`,
+            url: `example.com/${i}`,
+            likes: Math.floor(Math.random() * 100),
+          };
+          blogs.push(blog);
+          cy.createBlog(blog);
+        }
+      });
+
+      it('the blogs are ordered according to likes correctly', function () {
+        const sortedBlogs = blogs.toSorted((a, b) =>
+          a.likes > b.likes ? -1 : 1
+        );
+        cy.get('.blog').eq(0).should('contain', sortedBlogs[0].title);
+        cy.get('.blog').eq(1).should('contain', sortedBlogs[1].title);
+      });
+    });
   });
 });
