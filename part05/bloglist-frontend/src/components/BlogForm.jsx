@@ -20,6 +20,7 @@ const BlogForm = ({ createBlog }) => {
 
   return (
     <form
+      className="blog-form"
       onSubmit={addBlog}
       style={{
         display: 'flex',
@@ -48,7 +49,9 @@ const BlogForm = ({ createBlog }) => {
           onChange={(event) => handleBlogChange('url', event)}
         />
       </label>
-      <button type="submit">create</button>
+      <button className="submit-button" type="submit">
+        create
+      </button>
     </form>
   );
 };
