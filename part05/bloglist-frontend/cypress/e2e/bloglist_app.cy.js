@@ -41,19 +41,10 @@ describe('Bloglist app', () => {
 
   describe('When logged in', function () {
     beforeEach(function () {
-      cy.request('POST', `${Cypress.env('BACKEND')}/login`, {
-        username: user.username,
-        password: user.password,
-      }).then((response) => {
-        localStorage.setItem(
-          'loggedBloglistUser',
-          JSON.stringify(response.body)
-        );
-        cy.visit('');
-      });
+      cy.login({ username: user.username, password: user.password });
     });
 
-    it('A blog can be created', function () {
+    it('a blog can be created', function () {
       cy.contains('new blog').click();
       cy.get('form.blog-form').as('blogForm');
       const blog = {
@@ -66,6 +57,29 @@ describe('Bloglist app', () => {
       cy.get('@blogForm').contains('url').find('input').type(blog.url);
       cy.get('@blogForm').find('.submit-button').click();
       cy.contains(`${blog.title} ${blog.author}`);
+    });
+
+    describe('And a blog exists', function () {
+      let blog;
+
+      beforeEach(function () {
+        blog = {
+          title: 'Example title',
+          author: 'Example author',
+          url: 'example.com',
+          likes: Math.floor(Math.random() * 100),
+        };
+        cy.createBlog(blog);
+      });
+
+      it('a blog can be liked', function () {
+        cy.contains(`${blog.title} ${blog.author}`).parent().as('blog');
+        cy.get('@blog').contains('view').click();
+        cy.get('@blog').contains('likes').find('button').click();
+        cy.get('@blog')
+          .contains('likes')
+          .should('include.text', blog.likes + 1);
+      });
     });
   });
 });
