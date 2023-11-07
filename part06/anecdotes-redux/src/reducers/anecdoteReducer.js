@@ -36,7 +36,17 @@ const createAnecdote = (content) => {
   };
 };
 
+const registerVoteFor = (id) => {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const votes =
+      state.anecdotes.find((anecdote) => anecdote.id === id).votes + 1;
+    await anecdoteService.updateVotes(id, votes);
+    dispatch(incrementVoteOf(id));
+  };
+};
+
 export default anecdoteSlice.reducer;
 export const { incrementVoteOf, appendAnecdote, setAnecdotes } =
   anecdoteSlice.actions;
-export { initializeAnecdotes, createAnecdote };
+export { initializeAnecdotes, createAnecdote, registerVoteFor };
