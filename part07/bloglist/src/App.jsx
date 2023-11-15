@@ -1,32 +1,33 @@
 import { useState, useEffect, useRef } from 'react';
-import loginService from './services/login';
-import blogService from './services/blogs';
+import loginService from './services/loginService';
+import blogService from './services/blogService';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 import BlogForm from './components/BlogForm';
 import LoginForm from './components/LoginForm';
 import { useDispatch, useSelector } from 'react-redux';
+import { initialiseBlogs, createBlog } from './slices/blogsSlice';
 import {
   createAcknowledgement,
   createError,
 } from './slices/notificationsSlice';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
 
   const dispatch = useDispatch();
+  const blogs = useSelector((state) => state.blogs);
   const acknowledgementMessage = useSelector(
     (state) => state.notifications.acknowledgementMessage,
   );
   const errorMessage = useSelector((state) => state.notifications.errorMessage);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+    dispatch(initialiseBlogs());
+  }, [dispatch]);
 
   useEffect(() => {
     const loggedUser = window.localStorage.getItem('loggedBloglistUser');
@@ -39,12 +40,10 @@ const App = () => {
 
   const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility();
-    const returnedBlog = await blogService.create(blogObject);
-    returnedBlog.user = { username: user.username, name: user.name };
-    setBlogs([...blogs, returnedBlog]);
+    dispatch(createBlog(blogObject, user));
     dispatch(
       createAcknowledgement(
-        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        `a new blog ${blogObject.title} by ${blogObject.author} added`,
         5000,
       ),
     );
@@ -74,36 +73,35 @@ const App = () => {
   };
 
   const handleLike = async (blogObject) => {
-    const updatedBlog = {
-      ...blogObject,
-      likes: blogObject.likes + 1,
-      user: blogObject.user.id,
-    };
-    delete updatedBlog.id;
-
-    const returnedBlog = await blogService.update(blogObject.id, updatedBlog);
-    setBlogs(
-      blogs.map((blog) => {
-        if (blog.id === returnedBlog.id) {
-          return { ...blog, likes: returnedBlog.likes };
-        }
-        return blog;
-      }),
-    );
+    // const updatedBlog = {
+    //   ...blogObject,
+    //   likes: blogObject.likes + 1,
+    //   user: blogObject.user.id,
+    // };
+    // delete updatedBlog.id;
+    // const returnedBlog = await blogService.update(blogObject.id, updatedBlog);
+    // setBlogs(
+    //   blogs.map((blog) => {
+    //     if (blog.id === returnedBlog.id) {
+    //       return { ...blog, likes: returnedBlog.likes };
+    //     }
+    //     return blog;
+    //   }),
+    // );
   };
 
   const handleRemove = async (blogObject) => {
-    if (
-      window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
-    ) {
-      try {
-        await blogService.remove(blogObject.id);
-        setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
-        dispatch(createAcknowledgement('blog successfully removed', 5000));
-      } catch (error) {
-        dispatch(createError('unauthorised to remove this blog', 5000));
-      }
-    }
+    // if (
+    //   window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
+    // ) {
+    //   try {
+    //     await blogService.remove(blogObject.id);
+    //     setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
+    //     dispatch(createAcknowledgement('blog successfully removed', 5000));
+    //   } catch (error) {
+    //     dispatch(createError('unauthorised to remove this blog', 5000));
+    //   }
+    // }
   };
 
   const blogFormRef = useRef();
@@ -141,7 +139,7 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs
-        .sort((a, b) => (a.likes > b.likes ? -1 : 1))
+        .toSorted((a, b) => (a.likes > b.likes ? -1 : 1))
         .map((blog) => (
           <Blog
             key={blog.id}
