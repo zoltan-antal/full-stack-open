@@ -5,7 +5,7 @@ const initialState = {
   errorMessage: null,
 };
 
-const notificationSlice = createSlice({
+const notificationsSlice = createSlice({
   name: 'notifications',
   initialState: initialState,
   reducers: {
@@ -42,11 +42,11 @@ const createError = (message, timeout) => {
   };
 };
 
-export default notificationSlice.reducer;
+export default notificationsSlice.reducer;
 export const {
   setAcknowledgement,
   clearAcknowledgement,
   setError,
   clearError,
-} = notificationSlice.actions;
+} = notificationsSlice.actions;
 export { createAcknowledgement, createError };

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   createAcknowledgement,
   createError,
-} from './reducers/notificationReducer';
+} from './slices/notificationsSlice';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
