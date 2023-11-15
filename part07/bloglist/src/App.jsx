@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import loginService from './services/loginService';
-import blogService from './services/blogService';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
@@ -17,13 +15,14 @@ import {
   createAcknowledgement,
   createError,
 } from './slices/notificationsSlice';
+import { loginUser, logoutUser, retrieveLoggedUser } from './slices/userSlice';
 
 const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
 
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const blogs = useSelector((state) => state.blogs);
   const acknowledgementMessage = useSelector(
     (state) => state.notifications.acknowledgementMessage,
@@ -31,21 +30,19 @@ const App = () => {
   const errorMessage = useSelector((state) => state.notifications.errorMessage);
 
   useEffect(() => {
-    dispatch(initialiseBlogs());
+    const fetchBlogs = async () => {
+      await dispatch(initialiseBlogs());
+    };
+    fetchBlogs();
   }, [dispatch]);
 
   useEffect(() => {
-    const loggedUser = window.localStorage.getItem('loggedBloglistUser');
-    if (loggedUser) {
-      const user = JSON.parse(loggedUser);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
+    dispatch(retrieveLoggedUser());
+  }, [dispatch]);
 
   const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility();
-    dispatch(createBlog(blogObject, user));
+    await dispatch(createBlog(blogObject, user));
     dispatch(
       createAcknowledgement(
         `a new blog ${blogObject.title} by ${blogObject.author} added`,
@@ -58,10 +55,7 @@ const App = () => {
     event.preventDefault();
 
     try {
-      const user = await loginService.login({ username, password });
-      localStorage.setItem('loggedBloglistUser', JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
+      await dispatch(loginUser(username, password));
       setUsername('');
       setPassword('');
       dispatch(createAcknowledgement('successfully logged in', 5000));
@@ -71,14 +65,12 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('loggedBloglistUser');
-    setUser(null);
-    blogService.setToken(null);
+    dispatch(logoutUser());
     dispatch(createAcknowledgement('successfully logged out', 5000));
   };
 
   const handleLike = async (blogObject) => {
-    dispatch(likeBlog(blogObject));
+    await dispatch(likeBlog(blogObject));
   };
 
   const handleRemove = async (blogObject) => {
@@ -86,7 +78,7 @@ const App = () => {
       window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
     ) {
       try {
-        dispatch(deleteBlog(blogObject.id));
+        await dispatch(deleteBlog(blogObject.id));
         dispatch(createAcknowledgement('blog successfully removed', 5000));
       } catch (error) {
         dispatch(createError('unauthorised to remove this blog', 5000));
