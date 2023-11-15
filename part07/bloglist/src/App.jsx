@@ -6,14 +6,23 @@ import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 import BlogForm from './components/BlogForm';
 import LoginForm from './components/LoginForm';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  createAcknowledgement,
+  createError,
+} from './reducers/notificationReducer';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [acknowledgementMessage, setAcknowledgementMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+
+  const dispatch = useDispatch();
+  const acknowledgementMessage = useSelector(
+    (state) => state.notifications.acknowledgementMessage,
+  );
+  const errorMessage = useSelector((state) => state.notifications.errorMessage);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -33,12 +42,12 @@ const App = () => {
     const returnedBlog = await blogService.create(blogObject);
     returnedBlog.user = { username: user.username, name: user.name };
     setBlogs([...blogs, returnedBlog]);
-    setAcknowledgementMessage(
-      `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+    dispatch(
+      createAcknowledgement(
+        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        5000,
+      ),
     );
-    setTimeout(() => {
-      setAcknowledgementMessage(null);
-    }, 5000);
   };
 
   const handleLogin = async (event) => {
@@ -51,15 +60,9 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
-      setAcknowledgementMessage('successfully logged in');
-      setTimeout(() => {
-        setAcknowledgementMessage(null);
-      }, 5000);
+      dispatch(createAcknowledgement('successfully logged in', 5000));
     } catch (error) {
-      setErrorMessage('wrong username or password');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(createError('wrong username or password', 5000));
     }
   };
 
@@ -67,10 +70,7 @@ const App = () => {
     localStorage.removeItem('loggedBloglistUser');
     setUser(null);
     blogService.setToken(null);
-    setAcknowledgementMessage('successfully logged out');
-    setTimeout(() => {
-      setAcknowledgementMessage(null);
-    }, 5000);
+    dispatch(createAcknowledgement('successfully logged out', 5000));
   };
 
   const handleLike = async (blogObject) => {
@@ -99,15 +99,9 @@ const App = () => {
       try {
         await blogService.remove(blogObject.id);
         setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
-        setAcknowledgementMessage('blog successfully removed');
-        setTimeout(() => {
-          setAcknowledgementMessage(null);
-        }, 5000);
+        dispatch(createAcknowledgement('blog successfully removed', 5000));
       } catch (error) {
-        setErrorMessage('unauthorised to remove this blog');
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
+        dispatch(createError('unauthorised to remove this blog', 5000));
       }
     }
   };
