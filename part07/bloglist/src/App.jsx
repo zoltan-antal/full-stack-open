@@ -7,7 +7,12 @@ import Togglable from './components/Togglable';
 import BlogForm from './components/BlogForm';
 import LoginForm from './components/LoginForm';
 import { useDispatch, useSelector } from 'react-redux';
-import { initialiseBlogs, createBlog } from './slices/blogsSlice';
+import {
+  initialiseBlogs,
+  createBlog,
+  likeBlog,
+  deleteBlog,
+} from './slices/blogsSlice';
 import {
   createAcknowledgement,
   createError,
@@ -73,35 +78,20 @@ const App = () => {
   };
 
   const handleLike = async (blogObject) => {
-    // const updatedBlog = {
-    //   ...blogObject,
-    //   likes: blogObject.likes + 1,
-    //   user: blogObject.user.id,
-    // };
-    // delete updatedBlog.id;
-    // const returnedBlog = await blogService.update(blogObject.id, updatedBlog);
-    // setBlogs(
-    //   blogs.map((blog) => {
-    //     if (blog.id === returnedBlog.id) {
-    //       return { ...blog, likes: returnedBlog.likes };
-    //     }
-    //     return blog;
-    //   }),
-    // );
+    dispatch(likeBlog(blogObject));
   };
 
   const handleRemove = async (blogObject) => {
-    // if (
-    //   window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
-    // ) {
-    //   try {
-    //     await blogService.remove(blogObject.id);
-    //     setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
-    //     dispatch(createAcknowledgement('blog successfully removed', 5000));
-    //   } catch (error) {
-    //     dispatch(createError('unauthorised to remove this blog', 5000));
-    //   }
-    // }
+    if (
+      window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
+    ) {
+      try {
+        dispatch(deleteBlog(blogObject.id));
+        dispatch(createAcknowledgement('blog successfully removed', 5000));
+      } catch (error) {
+        dispatch(createError('unauthorised to remove this blog', 5000));
+      }
+    }
   };
 
   const blogFormRef = useRef();
