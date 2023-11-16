@@ -3,6 +3,7 @@ import rootReducer from '../reducers/rootReducer';
 
 const initialState = {
   notifications: { acknowledgementMessage: null, errorMessage: null },
+  user: null,
 };
 
 const StoreContext = createContext();

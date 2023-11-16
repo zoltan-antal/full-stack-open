@@ -27,18 +27,11 @@ const setAcknowledgement = (message) => ({
   payload: message,
 });
 
-const clearAcknowledgement = () => ({
-  type: 'CLEAR_ACKNOWLEDGEMENT',
-});
+const clearAcknowledgement = () => ({ type: 'CLEAR_ACKNOWLEDGEMENT' });
 
-const setError = (message) => ({
-  type: 'SET_ERROR',
-  payload: message,
-});
+const setError = (message) => ({ type: 'SET_ERROR', payload: message });
 
-const clearError = () => ({
-  type: 'CLEAR_ERROR',
-});
+const clearError = () => ({ type: 'CLEAR_ERROR' });
 
 // Custom hooks
 
@@ -56,5 +49,5 @@ const useErrorMessage = () => {
 };
 
 export default notificationsReducer;
-export { useNotifications, useAcknowledgementMessage, useErrorMessage };
 export { setAcknowledgement, clearAcknowledgement, setError, clearError };
+export { useNotifications, useAcknowledgementMessage, useErrorMessage };

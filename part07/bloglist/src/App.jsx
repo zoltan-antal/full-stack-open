@@ -15,13 +15,14 @@ import {
   useAcknowledgementMessage,
   useErrorMessage,
 } from './reducers/notificationsReducer';
+import { setUser, useUser } from './reducers/userReducer';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
   const { dispatch } = useContext(StoreContext);
+  const user = useUser();
   const acknowledgementMessage = useAcknowledgementMessage();
   const errorMessage = useErrorMessage();
 
@@ -33,7 +34,7 @@ const App = () => {
     const loggedUser = window.localStorage.getItem('loggedBloglistUser');
     if (loggedUser) {
       const user = JSON.parse(loggedUser);
-      setUser(user);
+      dispatch(setUser(user));
       blogService.setToken(user.token);
     }
   }, []);
@@ -60,7 +61,7 @@ const App = () => {
       const user = await loginService.login({ username, password });
       localStorage.setItem('loggedBloglistUser', JSON.stringify(user));
       blogService.setToken(user.token);
-      setUser(user);
+      dispatch(setUser(user));
       setUsername('');
       setPassword('');
       dispatch(setAcknowledgement('successfully logged in'));
@@ -77,7 +78,7 @@ const App = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('loggedBloglistUser');
-    setUser(null);
+    dispatch(setUser(null));
     blogService.setToken(null);
     dispatch(setAcknowledgement('successfully logged out'));
     setTimeout(() => {
