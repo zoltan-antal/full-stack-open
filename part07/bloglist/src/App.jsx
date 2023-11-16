@@ -16,19 +16,16 @@ import {
   useErrorMessage,
 } from './reducers/notificationsReducer';
 import { setUser, useUser } from './reducers/userReducer';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { dispatch } = useContext(StoreContext);
   const user = useUser();
   const acknowledgementMessage = useAcknowledgementMessage();
   const errorMessage = useErrorMessage();
-
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const loggedUser = window.localStorage.getItem('loggedBloglistUser');
@@ -37,16 +34,28 @@ const App = () => {
       dispatch(setUser(user));
       blogService.setToken(user.token);
     }
-  }, []);
+  }, [dispatch]);
+
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+    refetchOnWindowFocus: false,
+  });
+  const blogs = result.data;
+
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+    },
+  });
 
   const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility();
-    const returnedBlog = await blogService.create(blogObject);
-    returnedBlog.user = { username: user.username, name: user.name };
-    setBlogs([...blogs, returnedBlog]);
+    newBlogMutation.mutate(blogObject);
     dispatch(
       setAcknowledgement(
-        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        `a new blog ${blogObject.title} by ${blogObject.author} added`,
       ),
     );
     setTimeout(() => {
@@ -87,42 +96,41 @@ const App = () => {
   };
 
   const handleLike = async (blogObject) => {
-    const updatedBlog = {
-      ...blogObject,
-      likes: blogObject.likes + 1,
-      user: blogObject.user.id,
-    };
-    delete updatedBlog.id;
-
-    const returnedBlog = await blogService.update(blogObject.id, updatedBlog);
-    setBlogs(
-      blogs.map((blog) => {
-        if (blog.id === returnedBlog.id) {
-          return { ...blog, likes: returnedBlog.likes };
-        }
-        return blog;
-      }),
-    );
+    // const updatedBlog = {
+    //   ...blogObject,
+    //   likes: blogObject.likes + 1,
+    //   user: blogObject.user.id,
+    // };
+    // delete updatedBlog.id;
+    // const returnedBlog = await blogService.update(blogObject.id, updatedBlog);
+    // setBlogs(
+    //   blogs.map((blog) => {
+    //     if (blog.id === returnedBlog.id) {
+    //       return { ...blog, likes: returnedBlog.likes };
+    //     }
+    //     return blog;
+    //   }),
+    // );
   };
 
   const handleRemove = async (blogObject) => {
-    if (
-      window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
-    ) {
-      try {
-        await blogService.remove(blogObject.id);
-        setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
-        dispatch(setAcknowledgement('blog successfully removed'));
-        setTimeout(() => {
-          dispatch(clearAcknowledgement());
-        }, 5000);
-      } catch (error) {
-        dispatch(setError('unauthorised to remove this blog'));
-        setTimeout(() => {
-          dispatch(clearError());
-        }, 5000);
-      }
-    }
+    // if (
+    //   window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
+    // ) {
+    //   try {
+    //     await blogService.remove(blogObject.id);
+    //     setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
+    //     dispatch(setAcknowledgement('blog successfully removed'));
+    //     setTimeout(() => {
+    //       dispatch(clearAcknowledgement());
+    //     }, 5000);
+    //   } catch (error) {
+    //     dispatch(setError('unauthorised to remove this blog'));
+    //     setTimeout(() => {
+    //       dispatch(clearError());
+    //     }, 5000);
+    //   }
+    // }
   };
 
   const blogFormRef = useRef();
@@ -159,7 +167,23 @@ const App = () => {
         <h2>create new</h2>
         <BlogForm createBlog={addBlog} />
       </Togglable>
-      {blogs
+      {(() => {
+        if (result.isLoading) {
+          return <div>loading data...</div>;
+        }
+        return blogs
+          .sort((a, b) => (a.likes > b.likes ? -1 : 1))
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              user={user}
+              onLike={handleLike}
+              onRemove={handleRemove}
+            />
+          ));
+      })()}
+      {/* {blogs
         .sort((a, b) => (a.likes > b.likes ? -1 : 1))
         .map((blog) => (
           <Blog
@@ -169,7 +193,7 @@ const App = () => {
             onLike={handleLike}
             onRemove={handleRemove}
           />
-        ))}
+        ))} */}
     </div>
   );
 };
