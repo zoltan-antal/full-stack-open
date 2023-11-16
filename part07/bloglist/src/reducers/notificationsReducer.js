@@ -1,3 +1,6 @@
+import { useContext } from 'react';
+import { StoreContext } from '../context/StoreContext';
+
 const notificationsReducer = (state, action) => {
   switch (action.type) {
     case 'SET_ACKNOWLEDGEMENT':
@@ -17,4 +20,41 @@ const notificationsReducer = (state, action) => {
   }
 };
 
+// Action creators
+
+const setAcknowledgement = (message) => ({
+  type: 'SET_ACKNOWLEDGEMENT',
+  payload: message,
+});
+
+const clearAcknowledgement = () => ({
+  type: 'CLEAR_ACKNOWLEDGEMENT',
+});
+
+const setError = (message) => ({
+  type: 'SET_ERROR',
+  payload: message,
+});
+
+const clearError = () => ({
+  type: 'CLEAR_ERROR',
+});
+
+// Custom hooks
+
+const useNotifications = () => {
+  const { store } = useContext(StoreContext);
+  return store.notifications;
+};
+
+const useAcknowledgementMessage = () => {
+  return useNotifications().acknowledgementMessage;
+};
+
+const useErrorMessage = () => {
+  return useNotifications().errorMessage;
+};
+
 export default notificationsReducer;
+export { useNotifications, useAcknowledgementMessage, useErrorMessage };
+export { setAcknowledgement, clearAcknowledgement, setError, clearError };

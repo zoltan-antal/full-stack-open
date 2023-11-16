@@ -7,15 +7,23 @@ import Togglable from './components/Togglable';
 import BlogForm from './components/BlogForm';
 import LoginForm from './components/LoginForm';
 import { StoreContext } from './context/StoreContext';
+import {
+  setAcknowledgement,
+  clearAcknowledgement,
+  setError,
+  clearError,
+  useAcknowledgementMessage,
+  useErrorMessage,
+} from './reducers/notificationsReducer';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const { store, dispatch } = useContext(StoreContext);
-  // const [acknowledgementMessage, setAcknowledgementMessage] = useState(null);
-  // const [errorMessage, setErrorMessage] = useState(null);
+  const { dispatch } = useContext(StoreContext);
+  const acknowledgementMessage = useAcknowledgementMessage();
+  const errorMessage = useErrorMessage();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -35,20 +43,13 @@ const App = () => {
     const returnedBlog = await blogService.create(blogObject);
     returnedBlog.user = { username: user.username, name: user.name };
     setBlogs([...blogs, returnedBlog]);
-    // setAcknowledgementMessage(
-    //   `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
-    // );
-    // setTimeout(() => {
-    //   setAcknowledgementMessage(null);
-    // }, 5000);
-    dispatch({
-      type: 'SET_ACKNOWLEDGEMENT',
-      payload: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
-    });
+    dispatch(
+      setAcknowledgement(
+        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+      ),
+    );
     setTimeout(() => {
-      dispatch({
-        type: 'CLEAR_ACKNOWLEDGEMENT',
-      });
+      dispatch(clearAcknowledgement());
     }, 5000);
   };
 
@@ -62,32 +63,14 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
-      // setAcknowledgementMessage('successfully logged in');
-      // setTimeout(() => {
-      //   setAcknowledgementMessage(null);
-      // }, 5000);
-      dispatch({
-        type: 'SET_ACKNOWLEDGEMENT',
-        payload: 'successfully logged in',
-      });
+      dispatch(setAcknowledgement('successfully logged in'));
       setTimeout(() => {
-        dispatch({
-          type: 'CLEAR_ACKNOWLEDGEMENT',
-        });
+        dispatch(clearAcknowledgement());
       }, 5000);
     } catch (error) {
-      // setErrorMessage('wrong username or password');
-      // setTimeout(() => {
-      //   setErrorMessage(null);
-      // }, 5000);
-      dispatch({
-        type: 'SET_ERROR',
-        payload: 'wrong username or password',
-      });
+      dispatch(setError('wrong username or password'));
       setTimeout(() => {
-        dispatch({
-          type: 'CLEAR_ERROR',
-        });
+        dispatch(clearError());
       }, 5000);
     }
   };
@@ -96,18 +79,9 @@ const App = () => {
     localStorage.removeItem('loggedBloglistUser');
     setUser(null);
     blogService.setToken(null);
-    // setAcknowledgementMessage('successfully logged out');
-    // setTimeout(() => {
-    //   setAcknowledgementMessage(null);
-    // }, 5000);
-    dispatch({
-      type: 'SET_ACKNOWLEDGEMENT',
-      payload: 'successfully logged out',
-    });
+    dispatch(setAcknowledgement('successfully logged out'));
     setTimeout(() => {
-      dispatch({
-        type: 'CLEAR_ACKNOWLEDGEMENT',
-      });
+      dispatch(clearAcknowledgement());
     }, 5000);
   };
 
@@ -137,32 +111,14 @@ const App = () => {
       try {
         await blogService.remove(blogObject.id);
         setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
-        // setAcknowledgementMessage('blog successfully removed');
-        // setTimeout(() => {
-        //   setAcknowledgementMessage(null);
-        // }, 5000);
-        dispatch({
-          type: 'SET_ACKNOWLEDGEMENT',
-          payload: 'blog successfully removed',
-        });
+        dispatch(setAcknowledgement('blog successfully removed'));
         setTimeout(() => {
-          dispatch({
-            type: 'CLEAR_ACKNOWLEDGEMENT',
-          });
+          dispatch(clearAcknowledgement());
         }, 5000);
       } catch (error) {
-        // setErrorMessage('unauthorised to remove this blog');
-        // setTimeout(() => {
-        //   setErrorMessage(null);
-        // }, 5000);
-        dispatch({
-          type: 'SET_ERROR',
-          payload: 'unauthorised to remove this blog',
-        });
+        dispatch(setError('unauthorised to remove this blog'));
         setTimeout(() => {
-          dispatch({
-            type: 'CLEAR_ERROR',
-          });
+          dispatch(clearError());
         }, 5000);
       }
     }
@@ -175,13 +131,10 @@ const App = () => {
       <div>
         <h2>log in to application</h2>
         <Notification
-          message={store.notifications.acknowledgementMessage}
+          message={acknowledgementMessage}
           type={'acknowledgement'}
         />
-        <Notification
-          message={store.notifications.errorMessage}
-          type={'error'}
-        />
+        <Notification message={errorMessage} type={'error'} />
         <LoginForm
           handleSubmit={handleLogin}
           handleUsernameChange={(e) => setUsername(e.target.value)}
@@ -196,11 +149,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification
-        message={store.notifications.acknowledgementMessage}
-        type={'acknowledgement'}
-      />
-      <Notification message={store.notifications.errorMessage} type={'error'} />
+      <Notification message={acknowledgementMessage} type={'acknowledgement'} />
+      <Notification message={errorMessage} type={'error'} />
       <p>
         {user.name} logged in <button onClick={handleLogout}>logout</button>
       </p>

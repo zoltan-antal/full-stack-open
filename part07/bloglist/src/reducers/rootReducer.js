@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { StoreContext } from '../context/StoreContext';
 import notificationsReducer from './notificationsReducer';
 
 const rootReducer = (state, action) => {
@@ -6,4 +8,12 @@ const rootReducer = (state, action) => {
   };
 };
 
+// Custom hooks
+
+const useDispatch = () => {
+  const { dispatch } = useContext(StoreContext);
+  return dispatch;
+};
+
 export default rootReducer;
+export { useDispatch };
