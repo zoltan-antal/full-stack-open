@@ -1,11 +1,13 @@
-import { useEffect, useRef } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Notification from './components/Notification';
 import LoginForm from './components/LoginForm';
 import LogoutButton from './components/LogoutButton';
 import { initialiseBlogs } from './slices/blogsSlice';
 import { retrieveLoggedUser } from './slices/userSlice';
+import BlogList from './components/BlogList';
+import Users from './components/Users';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -25,6 +27,17 @@ const App = () => {
   useEffect(() => {
     dispatch(retrieveLoggedUser());
   }, [dispatch]);
+
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <BlogList />,
+    },
+    {
+      path: 'users',
+      element: <Users />,
+    },
+  ]);
 
   if (!user) {
     return (
@@ -48,7 +61,7 @@ const App = () => {
       <p>
         {user.name} logged in <LogoutButton />
       </p>
-      <Outlet />
+      <RouterProvider router={router} />
     </div>
   );
 };
