@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { likeBlog, deleteBlog } from '../slices/blogsSlice';
 import {
   createAcknowledgement,
   createError,
 } from '../slices/notificationsSlice';
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog }) => {
   const [expanded, setExpanded] = useState(false);
 
+  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const handleLike = async (blogObject) => {
@@ -68,7 +69,6 @@ const Blog = ({ blog, user }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
 };
 
 export default Blog;
