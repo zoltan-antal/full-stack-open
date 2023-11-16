@@ -50,6 +50,30 @@ const App = () => {
     },
   });
 
+  const updateBlogMutation = useMutation({
+    mutationFn: ([id, blogObject]) => blogService.update(id, blogObject),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+    },
+  });
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.remove,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      dispatch(setAcknowledgement('blog successfully removed'));
+      setTimeout(() => {
+        dispatch(clearAcknowledgement());
+      }, 5000);
+    },
+    onError: () => {
+      dispatch(setError('unauthorised to remove this blog'));
+      setTimeout(() => {
+        dispatch(clearError());
+      }, 5000);
+    },
+  });
+
   const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility();
     newBlogMutation.mutate(blogObject);
@@ -96,41 +120,21 @@ const App = () => {
   };
 
   const handleLike = async (blogObject) => {
-    // const updatedBlog = {
-    //   ...blogObject,
-    //   likes: blogObject.likes + 1,
-    //   user: blogObject.user.id,
-    // };
-    // delete updatedBlog.id;
-    // const returnedBlog = await blogService.update(blogObject.id, updatedBlog);
-    // setBlogs(
-    //   blogs.map((blog) => {
-    //     if (blog.id === returnedBlog.id) {
-    //       return { ...blog, likes: returnedBlog.likes };
-    //     }
-    //     return blog;
-    //   }),
-    // );
+    const updatedBlog = {
+      ...blogObject,
+      likes: blogObject.likes + 1,
+      user: blogObject.user.id,
+    };
+    delete updatedBlog.id;
+    updateBlogMutation.mutate([blogObject.id, updatedBlog]);
   };
 
   const handleRemove = async (blogObject) => {
-    // if (
-    //   window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
-    // ) {
-    //   try {
-    //     await blogService.remove(blogObject.id);
-    //     setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
-    //     dispatch(setAcknowledgement('blog successfully removed'));
-    //     setTimeout(() => {
-    //       dispatch(clearAcknowledgement());
-    //     }, 5000);
-    //   } catch (error) {
-    //     dispatch(setError('unauthorised to remove this blog'));
-    //     setTimeout(() => {
-    //       dispatch(clearError());
-    //     }, 5000);
-    //   }
-    // }
+    if (
+      window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
+    ) {
+      deleteBlogMutation.mutate(blogObject.id);
+    }
   };
 
   const blogFormRef = useRef();
