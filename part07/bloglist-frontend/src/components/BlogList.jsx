@@ -8,33 +8,23 @@ const BlogList = () => {
   const blogs = useSelector((state) => state.blogs);
   const blogFormRef = useRef();
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-    '& p': {
-      margin: 0,
-      background: 'red',
-    },
-  };
-
   return (
     <div>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <h2>create new</h2>
         <BlogForm blogFormRef={blogFormRef} />
       </Togglable>
-      {blogs
-        .toSorted((a, b) => (a.likes > b.likes ? -1 : 1))
-        .map((blog) => (
-          <div key={blog.id} style={blogStyle}>
-            <Link to={`/blogs/${blog.id}`}>
-              {blog.title} - {blog.author}
-            </Link>
-          </div>
-        ))}
+      <ul className="blog-list">
+        {blogs
+          .toSorted((a, b) => (a.likes > b.likes ? -1 : 1))
+          .map((blog) => (
+            <li key={blog.id}>
+              <Link to={`/blogs/${blog.id}`}>
+                {blog.title} - {blog.author}
+              </Link>
+            </li>
+          ))}
+      </ul>
     </div>
   );
 };

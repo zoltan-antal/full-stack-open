@@ -5,20 +5,9 @@ import LogoutButton from '../components/LogoutButton';
 const Nav = () => {
   const user = useSelector((state) => state.user);
 
-  const navStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    gap: '10px',
-    listStyle: 'none',
-    backgroundColor: 'lightgrey',
-    padding: '5px',
-  };
-
   return (
     <nav>
-      <ul style={navStyle}>
+      <ul>
         <li>
           <Link to="/blogs">blogs</Link>
         </li>

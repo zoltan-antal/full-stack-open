@@ -14,3 +14,29 @@
     color: red;
   }
 }
+
+nav {
+  & ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    list-style: none;
+    background-color: lightgrey;
+    padding: 5px;
+  }
+}
+
+.blog-list {
+  padding: 0;
+
+  & li {
+    padding-top: 10px;
+    padding-left: 2px;
+    border: solid;
+    border-width: 1px;
+    margin-bottom: 5px;
+    list-style: none;
+  }
+}
