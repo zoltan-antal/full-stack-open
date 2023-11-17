@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { likeBlog, deleteBlog } from '../slices/blogsSlice';
+import { likeBlog, deleteBlog, addBlogComment } from '../slices/blogsSlice';
 import {
   createAcknowledgement,
   createError,
 } from '../slices/notificationsSlice';
 
 const Blog = () => {
+  const [newComment, setNewComment] = useState('');
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -34,6 +37,12 @@ const Blog = () => {
     }
   };
 
+  const handleAddComment = async (event) => {
+    event.preventDefault();
+    await dispatch(addBlogComment(blog.id, newComment));
+    setNewComment('');
+  };
+
   if (!blog) {
     return null;
   }
@@ -55,6 +64,14 @@ const Blog = () => {
         <button onClick={() => handleRemove(blog)}>remove blog</button>
       )}
       <h3>comments</h3>
+      <form onSubmit={handleAddComment}>
+        <input
+          type="text"
+          value={newComment}
+          onChange={(event) => setNewComment(event.target.value)}
+        />
+        <button type="submit">add comment</button>
+      </form>
       <ul>
         {blog.comments.map((comment, i) => (
           <li key={`${comment}-${id}`}>{comment}</li>
