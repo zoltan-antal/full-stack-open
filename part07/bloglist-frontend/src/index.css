@@ -1,3 +1,37 @@
+@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import url('https://fonts.googleapis.com/css?family=Lato');
+@import url('https://fonts.googleapis.com/css?family=Inter');
+@import url('https://fonts.googleapis.com/css?family=Onest');
+@import url('https://fonts.googleapis.com/css?family=AR+One+Sans');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Ubuntu', 'Raleway', 'Lato', 'Inter', 'Onest', 'AR One Sans', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+    'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  text-decoration: none;
+}
+
+html {
+  font-size: 16px;
+  height: 100%;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  background-color: lavender;
+}
+
+main {
+  padding: 10px 20px;
+}
+
 .notification {
   background: lightgrey;
   font-size: 20px;
@@ -16,6 +50,13 @@
 }
 
 nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: lightgrey;
+  padding: 5px;
+
   & ul {
     display: flex;
     flex-direction: row;
@@ -23,8 +64,17 @@ nav {
     align-items: center;
     gap: 10px;
     list-style: none;
-    background-color: lightgrey;
+    padding: 8px;
+  }
+
+  & a {
+    color: black;
+    border-bottom: 2px solid cornflowerblue;
     padding: 5px;
+
+    &:hover {
+      border-color: white;
+    }
   }
 }
 
@@ -38,5 +88,79 @@ nav {
     border-width: 1px;
     margin-bottom: 5px;
     list-style: none;
+  }
+}
+
+button {
+  padding: 5px;
+  background-color: cornflowerblue;
+  font-size: 0.9rem;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: royalblue;
+  }
+}
+
+h2 {
+  margin: 20px 0px 10px;
+}
+
+h3 {
+  margin: 10px 0px 5px;
+}
+
+ul {
+  list-style-position: inside;
+}
+
+.blog {
+  & .blog-info {
+    border: 1px solid black;
+    padding: 10px;
+    list-style: none;
+  }
+
+  & .comment-list {
+    font-size: 0.95rem;
+  }
+
+  & ul {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+table {
+  & td {
+    padding-right: 20px;
+  }
+}
+
+.togglable {
+  margin: 10px 0px;
+
+  & button {
+    margin: 5px 0px 0px;
+  }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 5px;
+
+  &>div {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
   }
 }

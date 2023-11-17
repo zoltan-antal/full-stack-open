@@ -7,13 +7,15 @@ const Nav = () => {
 
   return (
     <nav>
-      <ul>
+      <ul className="left">
         <li>
           <Link to="/blogs">blogs</Link>
         </li>
         <li>
           <Link to="/users">users</Link>
         </li>
+      </ul>
+      <ul className="right">
         <li>{user.name} logged in</li>
         <li>
           <LogoutButton />

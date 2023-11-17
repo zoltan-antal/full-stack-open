@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { likeBlog, deleteBlog, addBlogComment } from '../slices/blogsSlice';
 import { initialiseUsers } from '../slices/usersSlice';
 import {
@@ -54,17 +54,26 @@ const Blog = () => {
       <h2>
         {blog.title} - {blog.author}
       </h2>
-      <div>
-        <a href={blog.url}>{blog.url}</a>
-      </div>
-      <div>
-        likes {blog.likes}{' '}
-        <button onClick={() => handleLike(blog)}>like</button>
-      </div>
-      <div>added by {blog.user.name || blog.user.username}</div>
-      {user.username === blog.user.username && (
-        <button onClick={() => handleRemove(blog)}>remove blog</button>
-      )}
+      <ul className="blog-info">
+        <li>
+          <a href={blog.url}>{blog.url}</a>
+        </li>
+        <li>
+          likes: {blog.likes}
+          <button onClick={() => handleLike(blog)}>like</button>
+        </li>
+        <li>
+          added by{' '}
+          <Link to={`/users/${blog.user.id}`}>
+            {blog.user.name || blog.user.username}
+          </Link>
+        </li>
+        {user.username === blog.user.username && (
+          <li>
+            <button onClick={() => handleRemove(blog)}>remove blog</button>
+          </li>
+        )}
+      </ul>
       <h3>comments</h3>
       <form onSubmit={handleAddComment}>
         <input
@@ -74,7 +83,7 @@ const Blog = () => {
         />
         <button type="submit">add comment</button>
       </form>
-      <ul>
+      <ul className="comment-list">
         {blog.comments.map((comment, i) => (
           <li key={`${comment}-${id}`}>{comment}</li>
         ))}

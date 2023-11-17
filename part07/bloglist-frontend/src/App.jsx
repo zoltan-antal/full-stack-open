@@ -32,7 +32,7 @@ const App = () => {
 
   if (!user) {
     return (
-      <div>
+      <main>
         <h2>log in to application</h2>
         <Notification
           message={acknowledgementMessage}
@@ -40,18 +40,23 @@ const App = () => {
         />
         <Notification message={errorMessage} type={'error'} />
         <LoginForm />
-      </div>
+      </main>
     );
   }
 
   return (
-    <div>
+    <>
       <Nav />
-      <Notification message={acknowledgementMessage} type={'acknowledgement'} />
-      <Notification message={errorMessage} type={'error'} />
-      <h2>blog app</h2>
-      <Outlet />
-    </div>
+      <main>
+        <Notification
+          message={acknowledgementMessage}
+          type={'acknowledgement'}
+        />
+        <Notification message={errorMessage} type={'error'} />
+        <h2>blog app</h2>
+        <Outlet />
+      </main>
+    </>
   );
 };
 
