@@ -52,8 +52,14 @@ const Blog = () => {
       </div>
       <div>added by {blog.user.name || blog.user.username}</div>
       {user.username === blog.user.username && (
-        <button onClick={() => handleRemove(blog)}>remove</button>
+        <button onClick={() => handleRemove(blog)}>remove blog</button>
       )}
+      <h3>comments</h3>
+      <ul>
+        {blog.comments.map((comment, i) => (
+          <li key={`${comment}-${id}`}>{comment}</li>
+        ))}
+      </ul>
     </div>
   );
 };
