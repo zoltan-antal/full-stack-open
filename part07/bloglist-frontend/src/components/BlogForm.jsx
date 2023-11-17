@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createBlog } from '../slices/blogsSlice';
+import { initialiseUsers } from '../slices/usersSlice';
 import { createAcknowledgement } from '../slices/notificationsSlice';
 
 const BlogForm = ({ blogFormRef }) => {
@@ -22,7 +23,7 @@ const BlogForm = ({ blogFormRef }) => {
       url: newBlog.url,
     };
     await dispatch(createBlog(blogObject, user));
-
+    await dispatch(initialiseUsers());
     blogFormRef.current.toggleVisibility();
     dispatch(
       createAcknowledgement(

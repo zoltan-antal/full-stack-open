@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { likeBlog, deleteBlog, addBlogComment } from '../slices/blogsSlice';
+import { initialiseUsers } from '../slices/usersSlice';
 import {
   createAcknowledgement,
   createError,
@@ -29,6 +30,7 @@ const Blog = () => {
     ) {
       try {
         await dispatch(deleteBlog(blogObject.id));
+        await dispatch(initialiseUsers());
         dispatch(createAcknowledgement('blog successfully removed', 5000));
         navigate('/blogs');
       } catch (error) {
