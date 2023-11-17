@@ -1,13 +1,19 @@
 import { useEffect } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Notification from './components/Notification';
 import LoginForm from './components/LoginForm';
 import LogoutButton from './components/LogoutButton';
+import BlogList from './components/BlogList';
+import UserList from './components/UserList';
+import User from './components/User';
 import { initialiseBlogs } from './slices/blogsSlice';
 import { retrieveLoggedUser } from './slices/userSlice';
-import BlogList from './components/BlogList';
-import Users from './components/Users';
+import { initialiseUsers } from './slices/usersSlice';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -22,6 +28,11 @@ const App = () => {
       await dispatch(initialiseBlogs());
     };
     fetchBlogs();
+
+    const fetchUsers = async () => {
+      await dispatch(initialiseUsers());
+    };
+    fetchUsers();
   }, [dispatch]);
 
   useEffect(() => {
@@ -34,8 +45,16 @@ const App = () => {
       element: <BlogList />,
     },
     {
+      path: 'blogs',
+      element: <Navigate replace to={'/'} />,
+    },
+    {
       path: 'users',
-      element: <Users />,
+      element: <UserList />,
+    },
+    {
+      path: 'users/:id',
+      element: <User />,
     },
   ]);
 
