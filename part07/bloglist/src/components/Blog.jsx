@@ -1,17 +1,21 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import { likeBlog, deleteBlog } from '../slices/blogsSlice';
 import {
   createAcknowledgement,
   createError,
 } from '../slices/notificationsSlice';
 
-const Blog = ({ blog }) => {
-  const [expanded, setExpanded] = useState(false);
+const Blog = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const user = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+
+  const id = useParams().id;
+  const blogs = useSelector((state) => state.blogs);
+  const blog = blogs.find((blog) => blog.id === id);
 
   const handleLike = async (blogObject) => {
     await dispatch(likeBlog(blogObject));
@@ -24,44 +28,32 @@ const Blog = ({ blog }) => {
       try {
         await dispatch(deleteBlog(blogObject.id));
         dispatch(createAcknowledgement('blog successfully removed', 5000));
+        navigate('/blogs');
       } catch (error) {
         dispatch(createError('unauthorised to remove this blog', 5000));
       }
     }
   };
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-    '& p': {
-      margin: 0,
-      background: 'red',
-    },
-  };
+  if (!blog) {
+    return null;
+  }
 
   return (
-    <div className="blog" style={blogStyle}>
+    <div className="blog">
+      <h2>
+        {blog.title} - {blog.author}
+      </h2>
       <div>
-        {blog.title} {blog.author}{' '}
-        <button onClick={() => setExpanded(!expanded)}>
-          {expanded ? 'hide' : 'view'}
-        </button>
+        <a href={blog.url}>{blog.url}</a>
       </div>
-      {expanded && (
-        <>
-          <div>{blog.url}</div>
-          <div>
-            likes {blog.likes}{' '}
-            <button onClick={() => handleLike(blog)}>like</button>
-          </div>
-          <div>{blog.user.name || blog.user.username}</div>
-          {user.username === blog.user.username && (
-            <button onClick={() => handleRemove(blog)}>remove</button>
-          )}
-        </>
+      <div>
+        likes {blog.likes}{' '}
+        <button onClick={() => handleLike(blog)}>like</button>
+      </div>
+      <div>added by {blog.user.name || blog.user.username}</div>
+      {user.username === blog.user.username && (
+        <button onClick={() => handleRemove(blog)}>remove</button>
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import {
   Navigate,
 } from 'react-router-dom';
 import BlogList from '../components/BlogList';
+import Blog from '../components/Blog';
 import UserList from '../components/UserList';
 import User from '../components/User';
 
@@ -16,6 +17,10 @@ const Router = () => {
     {
       path: 'blogs',
       element: <Navigate replace to={'/'} />,
+    },
+    {
+      path: 'blogs/:id',
+      element: <Blog />,
     },
     {
       path: 'users',
