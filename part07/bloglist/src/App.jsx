@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Notification from './components/Notification';
 import LoginForm from './components/LoginForm';
-import LogoutButton from './components/LogoutButton';
-import Router from './routes/Router';
 import { initialiseBlogs } from './slices/blogsSlice';
 import { retrieveLoggedUser } from './slices/userSlice';
 import { initialiseUsers } from './slices/usersSlice';
+import Nav from './components/Nav';
+import { Outlet } from 'react-router-dom';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -17,6 +17,8 @@ const App = () => {
   const errorMessage = useSelector((state) => state.notifications.errorMessage);
 
   useEffect(() => {
+    dispatch(retrieveLoggedUser());
+
     const fetchBlogs = async () => {
       await dispatch(initialiseBlogs());
     };
@@ -26,10 +28,6 @@ const App = () => {
       await dispatch(initialiseUsers());
     };
     fetchUsers();
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(retrieveLoggedUser());
   }, [dispatch]);
 
   if (!user) {
@@ -48,13 +46,11 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
+      <Nav />
       <Notification message={acknowledgementMessage} type={'acknowledgement'} />
       <Notification message={errorMessage} type={'error'} />
-      <p>
-        {user.name} logged in <LogoutButton />
-      </p>
-      <Router />
+      <h2>blog app</h2>
+      <Outlet />
     </div>
   );
 };
