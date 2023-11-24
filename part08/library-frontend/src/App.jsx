@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { useApolloClient } from '@apollo/client';
+import { useApolloClient, useSubscription } from '@apollo/client';
+import { BOOK_ADDED } from './queries';
 
 const App = () => {
   const [token, setToken] = useState(null);
@@ -20,6 +21,13 @@ const App = () => {
     client.resetStore();
     setToken(null);
   };
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded;
+      console.log(addedBook);
+    },
+  });
 
   return (
     <div>
