@@ -1,19 +1,43 @@
+import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { ALL_BOOKS } from '../queries';
+import { ALL_BOOKS, BOOKS_BY_GENRE } from '../queries';
 
 const Books = () => {
-  const result = useQuery(ALL_BOOKS);
+  const [books, setBooks] = useState([]);
+  const [genres, setGenres] = useState(new Set());
+  const [genreFilter, setGenreFilter] = useState(null);
+  const [filteredBooks, setFilteredBooks] = useState([]);
 
-  if (result.loading) {
+  const allBooksResult = useQuery(ALL_BOOKS, {
+    onCompleted: (data) => {
+      setBooks(data.allBooks);
+      const genres = new Set();
+      data.allBooks.forEach((book) =>
+        book.genres.forEach((genre) => genres.add(genre))
+      );
+      setGenres(genres);
+    },
+  });
+  const filteredBooksResult = useQuery(BOOKS_BY_GENRE, {
+    variables: { genre: genreFilter },
+    skip: !genreFilter,
+    fetchPolicy: 'no-cache',
+    onCompleted: (data) => setFilteredBooks(data.allBooks),
+  });
+
+  useEffect(() => {
+    if (!genreFilter) {
+      setFilteredBooks(books);
+    }
+  }, [genreFilter, books]);
+
+  if (allBooksResult.loading || filteredBooksResult.loading) {
     return <div>loading...</div>;
   }
-
-  const books = result.data.allBooks;
 
   return (
     <div>
       <h2>books</h2>
-
       <table>
         <tbody>
           <tr>
@@ -21,15 +45,25 @@ const Books = () => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {books.map((a) => (
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author}</td>
-              <td>{a.published}</td>
-            </tr>
-          ))}
+          {filteredBooks.map((book) => {
+            return (
+              <tr key={book.title}>
+                <td>{book.title}</td>
+                <td>{book.author.name}</td>
+                <td>{book.published}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
+      <div style={{ display: 'flex', gap: '5px' }}>
+        {Array.from(genres).map((genre) => (
+          <button key={genre} onClick={() => setGenreFilter(genre)}>
+            {genre}
+          </button>
+        ))}
+        <button onClick={() => setGenreFilter(null)}>all genres</button>
+      </div>
     </div>
   );
 };

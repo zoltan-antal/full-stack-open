@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { CREATE_BOOK, ALL_BOOKS } from '../queries';
 
 const NewBook = () => {
+  const { token } = useOutletContext();
   const navigate = useNavigate();
 
   const [title, setTitle] = useState('');
@@ -16,11 +17,18 @@ const NewBook = () => {
     refetchQueries: [{ query: ALL_BOOKS }],
   });
 
+  useEffect(() => {
+    if (!localStorage.getItem('libraryUserToken')) {
+      navigate('/login');
+    }
+  }, [token, navigate]);
+
   const submit = async (event) => {
     event.preventDefault();
 
-    createBook({
+    await createBook({
       variables: { title, author, published: Number(published), genres },
+      awaitRefetchQueries: true,
     });
 
     setTitle('');
