@@ -43,9 +43,14 @@ const calculateBmi = ({ height, weight }: BmiData): string => {
 
     case bmi >= 40:
       return 'Obese (Class III)';
+
+    default:
+      throw new Error('malformatted parameters');
   }
 };
 
-console.log(calculateBmi(parseArguments(process.argv)));
+if (require.main === module) {
+  console.log(calculateBmi(parseArguments(process.argv)));
+}
 
-export {};
+export default calculateBmi;
