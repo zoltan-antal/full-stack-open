@@ -26,13 +26,13 @@ const calculateRating = (average: number, target: number): [number, string] => {
   const averageToTarget = average / target;
   switch (true) {
     case averageToTarget >= 1:
-      return [3, 'good job'];
+      return [3, 'good'];
 
     case averageToTarget >= 0.75:
       return [2, 'not bad but could be better'];
 
     default:
-      return [1, 'not the best'];
+      return [1, 'bad'];
   }
 };
 
@@ -56,6 +56,8 @@ const calculateExercises = ({
   };
 };
 
-console.log(calculateExercises(parseArguments(process.argv)));
+if (require.main === module) {
+  console.log(calculateExercises(parseArguments(process.argv)));
+}
 
-export {};
+export default calculateExercises;
