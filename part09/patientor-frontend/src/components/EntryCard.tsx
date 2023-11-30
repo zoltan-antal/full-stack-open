@@ -30,6 +30,7 @@ const EntryCard = ({ entry, diagnoses }: EntryProps) => {
             return (
               <div>
                 employer: {entry.employerName}
+                <br />
                 {entry.sickLeave &&
                   `sick leave: ${entry.sickLeave.startDate} - ${entry.sickLeave.endDate}`}
               </div>

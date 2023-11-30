@@ -18,38 +18,108 @@ const EntryForm = ({
   possibleDiagnosisCodes,
   createErrorMessage,
 }: EntryFormProps) => {
+  const [type, setType] = useState('Hospital');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [specialist, setSpecialist] = useState('');
+  const [dischargeDate, setDischargeDate] = useState('');
+  const [dischargeCriteria, setDischargeCriteria] = useState('');
+  const [employerName, setEmployerName] = useState('');
+  const [sickLeave, setSickLeave] = useState(false);
+  const [sickLeaveStartDate, setSickLeaveStartDate] = useState('');
+  const [sickLeaveEndDate, setSickLeaveEndDate] = useState('');
   const [healthCheckRating, setHealthCheckRating] = useState('');
   const [diagnosisCodes, setDiagnosisCodes] = useState<Set<string>>(new Set());
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const diagnosisCodesArray = Array.from(diagnosisCodes);
-    console.log(diagnosisCodesArray);
-    const newEntry: EntryFormValues = {
-      type: 'HealthCheck',
-      description,
-      date,
-      specialist,
-      healthCheckRating: Number(healthCheckRating),
-      ...(diagnosisCodesArray.length > 0
-        ? { diagnosisCodes: diagnosisCodesArray }
-        : {}),
-    };
     try {
-      const returnedEntry = await patientService.addEntry(
-        patient!.id,
-        newEntry
-      );
-      setPatient({
-        ...patient!,
-        entries: [...patient!.entries, returnedEntry],
-      });
+      switch (type) {
+        case 'Hospital':
+          const newHospitalEntry: EntryFormValues = {
+            type: 'Hospital',
+            description,
+            date,
+            specialist,
+            discharge: { date: dischargeDate, criteria: dischargeCriteria },
+            ...(diagnosisCodesArray.length > 0
+              ? { diagnosisCodes: diagnosisCodesArray }
+              : {}),
+          };
+          const returnedHospitalEntry = await patientService.addEntry(
+            patient!.id,
+            newHospitalEntry
+          );
+          setPatient({
+            ...patient!,
+            entries: [...patient!.entries, returnedHospitalEntry],
+          });
+          break;
+
+        case 'OccupationalHealthcare':
+          const newOccupationalHealthcareEntry: EntryFormValues = {
+            type: 'OccupationalHealthcare',
+            description,
+            date,
+            specialist,
+            employerName,
+            ...(sickLeave
+              ? {
+                  sickLeave: {
+                    startDate: sickLeaveStartDate,
+                    endDate: sickLeaveEndDate,
+                  },
+                }
+              : {}),
+            ...(diagnosisCodesArray.length > 0
+              ? { diagnosisCodes: diagnosisCodesArray }
+              : {}),
+          };
+          const returnedOccupationalHealthcareEntry =
+            await patientService.addEntry(
+              patient!.id,
+              newOccupationalHealthcareEntry
+            );
+          setPatient({
+            ...patient!,
+            entries: [...patient!.entries, returnedOccupationalHealthcareEntry],
+          });
+          break;
+
+        case 'HealthCheck':
+          const newHealthCheckEntry: EntryFormValues = {
+            type: 'HealthCheck',
+            description,
+            date,
+            specialist,
+            healthCheckRating: Number(healthCheckRating),
+            ...(diagnosisCodesArray.length > 0
+              ? { diagnosisCodes: diagnosisCodesArray }
+              : {}),
+          };
+          const returnedHealthCheckEntry = await patientService.addEntry(
+            patient!.id,
+            newHealthCheckEntry
+          );
+          setPatient({
+            ...patient!,
+            entries: [...patient!.entries, returnedHealthCheckEntry],
+          });
+          break;
+
+        default:
+          break;
+      }
       setDescription('');
       setDate('');
       setSpecialist('');
+      setDischargeDate('');
+      setDischargeCriteria('');
+      setEmployerName('');
+      setSickLeave(false);
+      setSickLeaveStartDate('');
+      setSickLeaveEndDate('');
       setHealthCheckRating('');
       setDiagnosisCodes(new Set());
     } catch (error) {
@@ -75,7 +145,17 @@ const EntryForm = ({
 
   return (
     <div style={{ border: '1px solid black' }}>
-      <h3>New HealthCheck entry</h3>
+      <label>
+        Entry type
+        <select value={type} onChange={(e) => setType(e.target.value)}>
+          <option value="Hospital" selected>
+            Hospital
+          </option>
+          <option value="OccupationalHealthcare">OccupationalHealthcare</option>
+          <option value="HealthCheck">HealthCheck</option>
+        </select>
+      </label>
+      <h3>New {type} entry</h3>
       <form
         onSubmit={handleSubmit}
         style={{
@@ -111,17 +191,86 @@ const EntryForm = ({
             onChange={(e) => setSpecialist(e.target.value)}
           />
         </label>
-        <label>
-          Health check rating
-          <input
-            type="number"
-            min="0"
-            max="3"
-            value={healthCheckRating}
-            required
-            onChange={(e) => setHealthCheckRating(e.target.value)}
-          />
-        </label>
+        {type === 'Hospital' && (
+          <label>
+            Discharge date
+            <input
+              type="date"
+              value={dischargeDate}
+              required
+              onChange={(e) => setDischargeDate(e.target.value)}
+            />
+          </label>
+        )}
+        {type === 'Hospital' && (
+          <label>
+            Discharge criteria
+            <input
+              type="text"
+              value={dischargeCriteria}
+              required
+              onChange={(e) => setDischargeCriteria(e.target.value)}
+            />
+          </label>
+        )}
+        {type === 'OccupationalHealthcare' && (
+          <label>
+            Employer name
+            <input
+              type="text"
+              value={employerName}
+              required
+              onChange={(e) => setEmployerName(e.target.value)}
+            />
+          </label>
+        )}
+        {type === 'OccupationalHealthcare' && (
+          <div>
+            <label>
+              Sick leave?
+              <input
+                type="checkbox"
+                checked={sickLeave}
+                onChange={(e) => setSickLeave(e.target.checked)}
+              />
+            </label>
+            {sickLeave && (
+              <>
+                <label>
+                  Start date
+                  <input
+                    type="date"
+                    value={sickLeaveStartDate}
+                    required
+                    onChange={(e) => setSickLeaveStartDate(e.target.value)}
+                  />
+                </label>
+                <label>
+                  End date
+                  <input
+                    type="date"
+                    value={sickLeaveEndDate}
+                    required
+                    onChange={(e) => setSickLeaveEndDate(e.target.value)}
+                  />
+                </label>
+              </>
+            )}
+          </div>
+        )}
+        {type === 'HealthCheck' && (
+          <label>
+            Health check rating
+            <input
+              type="number"
+              min="0"
+              max="3"
+              value={healthCheckRating}
+              required
+              onChange={(e) => setHealthCheckRating(e.target.value)}
+            />
+          </label>
+        )}
         <label>
           Diagnosis codes:
           <br />
@@ -133,6 +282,7 @@ const EntryForm = ({
                   key={code}
                   type="checkbox"
                   value={code}
+                  checked={Array.from(diagnosisCodes).includes(code)}
                   onChange={handleDiagnosisCodeChange}
                 />
               </label>
