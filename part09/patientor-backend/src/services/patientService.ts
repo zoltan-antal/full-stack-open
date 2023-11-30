@@ -20,6 +20,14 @@ const getNonSensitiveEntries = (): NonSensitivePatientEntry[] => {
   }));
 };
 
+const getEntry = (id: string): PatientEntry => {
+  const patient = patients.find((patient) => patient.id === id);
+  if (!patient) {
+    throw new Error('Patient does not exist with id: ' + id);
+  }
+  return patient;
+};
+
 const addEntry = (entry: NewPatientEntry): PatientEntry => {
   const newPatientEntry = {
     ...entry,
@@ -30,4 +38,4 @@ const addEntry = (entry: NewPatientEntry): PatientEntry => {
   return newPatientEntry;
 };
 
-export default { getEntries, getNonSensitiveEntries, addEntry };
+export default { getEntries, getNonSensitiveEntries, getEntry, addEntry };
