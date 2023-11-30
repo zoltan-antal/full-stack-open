@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Patient, Diagnosis } from '../types';
 import patientService from '../services/patients';
 import EntryCard from './EntryCard';
+import EntryForm from './EntryForm';
 
 interface PatientPageProps {
   diagnoses: Diagnosis[];
@@ -10,6 +11,9 @@ interface PatientPageProps {
 
 const PatientPage = ({ diagnoses }: PatientPageProps) => {
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [entryFormStatus, setEntryFormStatus] = useState<'open' | 'closed'>(
+    'closed'
+  );
 
   const id = useParams().id as string;
 
@@ -35,10 +39,22 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
         <br />
         occupation: {patient.occupation}
       </p>
+      {entryFormStatus === 'closed' && (
+        <button onClick={() => setEntryFormStatus('open')}>
+          add new entry
+        </button>
+      )}
+      {entryFormStatus === 'open' && (
+        <EntryForm
+          setEntryFormStatus={setEntryFormStatus}
+          patient={patient}
+          setPatient={setPatient}
+        />
+      )}
       <h3>entries</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
         {patient.entries.map((entry) => (
-          <EntryCard entry={entry} diagnoses={diagnoses} />
+          <EntryCard key={entry.id} entry={entry} diagnoses={diagnoses} />
         ))}
       </div>
     </div>

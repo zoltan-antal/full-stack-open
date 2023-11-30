@@ -45,11 +45,12 @@ const EntryCard = ({ entry, diagnoses }: EntryProps) => {
       })()}
       <p>diagnose by {entry.specialist}</p>
       <ul>
-        {entry.diagnosisCodes?.map((code) => (
-          <li>
-            {code} {diagnoses.find((d) => d.code === code)!.name}
-          </li>
-        ))}
+        {diagnoses &&
+          entry.diagnosisCodes?.map((code, index) => (
+            <li key={`${code}-${index}`}>
+              {code} {diagnoses.find((d) => d.code === code)!.name}
+            </li>
+          ))}
       </ul>
     </div>
   );
