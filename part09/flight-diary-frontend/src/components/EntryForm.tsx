@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DiaryEntry, NewDiaryEntry, Visibility, Weather } from '../types';
 import diaryService from '../services/diaryService';
+import axios from 'axios';
 
 interface EntryFormProps {
   entries: DiaryEntry[];
@@ -12,6 +13,14 @@ const EntryForm = ({ setEntries, entries }: EntryFormProps) => {
   const [visibility, setVisibility] = useState('');
   const [weather, setWeather] = useState('');
   const [comment, setComment] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const createErrorMessage = (message: string) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 5000);
+  };
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -21,13 +30,22 @@ const EntryForm = ({ setEntries, entries }: EntryFormProps) => {
       weather: weather as Weather,
       comment,
     };
-    const createdEntry = await diaryService.createEntry(newEntry);
-    setEntries([...entries, createdEntry]);
+    try {
+      const createdEntry = await diaryService.createEntry(newEntry);
+      setEntries([...entries, createdEntry]);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        createErrorMessage(error.response?.data);
+      } else {
+        createErrorMessage('An unknown error has ocurred.');
+      }
+    }
   };
 
   return (
     <div>
       <h2>Add new entry</h2>
+      <p style={{ color: 'red' }}>{errorMessage}</p>
       <form
         onSubmit={handleSubmit}
         style={{
