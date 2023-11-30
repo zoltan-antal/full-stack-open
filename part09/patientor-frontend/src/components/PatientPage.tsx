@@ -58,6 +58,7 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
           setEntryFormStatus={setEntryFormStatus}
           patient={patient}
           setPatient={setPatient}
+          possibleDiagnosisCodes={diagnoses.map((d) => d.code)}
           createErrorMessage={createErrorMessage}
         />
       )}

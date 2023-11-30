@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import axios from 'axios';
 import { EntryFormValues, Patient } from '../types';
 import patientService from '../services/patients';
@@ -7,6 +7,7 @@ interface EntryFormProps {
   setEntryFormStatus: React.Dispatch<React.SetStateAction<'open' | 'closed'>>;
   patient: Patient | null;
   setPatient: React.Dispatch<React.SetStateAction<Patient | null>>;
+  possibleDiagnosisCodes: string[];
   createErrorMessage: (message: string) => void;
 }
 
@@ -14,23 +15,28 @@ const EntryForm = ({
   setEntryFormStatus,
   patient,
   setPatient,
+  possibleDiagnosisCodes,
   createErrorMessage,
 }: EntryFormProps) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [specialist, setSpecialist] = useState('');
   const [healthCheckRating, setHealthCheckRating] = useState('');
-  const [diagnosisCodes, setDiagnosisCodes] = useState('');
+  const [diagnosisCodes, setDiagnosisCodes] = useState<Set<string>>(new Set());
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+    const diagnosisCodesArray = Array.from(diagnosisCodes);
+    console.log(diagnosisCodesArray);
     const newEntry: EntryFormValues = {
       type: 'HealthCheck',
-      description: description,
+      description,
       date,
       specialist,
       healthCheckRating: Number(healthCheckRating),
-      ...(diagnosisCodes ? { diagnosisCodes: diagnosisCodes.split(', ') } : {}),
+      ...(diagnosisCodesArray.length > 0
+        ? { diagnosisCodes: diagnosisCodesArray }
+        : {}),
     };
     try {
       const returnedEntry = await patientService.addEntry(
@@ -45,13 +51,25 @@ const EntryForm = ({
       setDate('');
       setSpecialist('');
       setHealthCheckRating('');
-      setDiagnosisCodes('');
+      setDiagnosisCodes(new Set());
     } catch (error) {
       if (axios.isAxiosError(error)) {
         createErrorMessage(error.response?.data);
       } else {
         createErrorMessage('An unknown error has ocurred.');
       }
+    }
+  };
+
+  const handleDiagnosisCodeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setDiagnosisCodes((prevCodes) => new Set([...prevCodes, e.target.value]));
+    } else {
+      setDiagnosisCodes((prevCodes) => {
+        const newCodes = new Set(prevCodes);
+        newCodes.delete(e.target.value);
+        return newCodes;
+      });
     }
   };
 
@@ -78,7 +96,7 @@ const EntryForm = ({
         <label>
           Date
           <input
-            type="text"
+            type="date"
             value={date}
             required
             onChange={(e) => setDate(e.target.value)}
@@ -96,19 +114,30 @@ const EntryForm = ({
         <label>
           Health check rating
           <input
-            type="text"
+            type="number"
+            min="0"
+            max="3"
             value={healthCheckRating}
             required
             onChange={(e) => setHealthCheckRating(e.target.value)}
           />
         </label>
         <label>
-          Diagnosis codes
-          <input
-            type="text"
-            value={diagnosisCodes}
-            onChange={(e) => setDiagnosisCodes(e.target.value)}
-          />
+          Diagnosis codes:
+          <br />
+          <div>
+            {possibleDiagnosisCodes.map((code) => (
+              <label key={code}>
+                {code}
+                <input
+                  key={code}
+                  type="checkbox"
+                  value={code}
+                  onChange={handleDiagnosisCodeChange}
+                />
+              </label>
+            ))}
+          </div>
         </label>
         <div>
           <button type="button" onClick={() => setEntryFormStatus('closed')}>

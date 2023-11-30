@@ -119,7 +119,7 @@ const toNewEntry = (object: unknown): NewEntry => {
       const newHospitalEntry: NewEntry = {
         type: object.type,
         description: object.description as string,
-        date: object.description as string,
+        date: object.date as string,
         specialist: object.specialist as string,
         ...('diagnosisCodes' in object
           ? {
@@ -137,7 +137,7 @@ const toNewEntry = (object: unknown): NewEntry => {
       const newOccupationalHealthcareEntry: NewEntry = {
         type: object.type,
         description: object.description as string,
-        date: object.description as string,
+        date: object.date as string,
         specialist: object.specialist as string,
         ...('diagnosisCodes' in object
           ? {
@@ -158,7 +158,7 @@ const toNewEntry = (object: unknown): NewEntry => {
       const newHealthCheckEntry: NewEntry = {
         type: object.type,
         description: object.description as string,
-        date: object.description as string,
+        date: object.date as string,
         specialist: object.specialist as string,
         ...('diagnosisCodes' in object
           ? {
