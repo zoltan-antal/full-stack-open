@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DiaryEntry } from './types';
-import { getAllEntries } from './services/diaryService';
+import diaryService from './services/diaryService';
+import EntryForm from './components/EntryForm';
 import Entries from './components/Entries';
 
 function App() {
@@ -8,7 +9,7 @@ function App() {
 
   useEffect(() => {
     const fetchEntries = async () => {
-      const entries = await getAllEntries();
+      const entries = await diaryService.getAllEntries();
       setEntries(entries);
     };
     fetchEntries();
@@ -16,6 +17,7 @@ function App() {
 
   return (
     <>
+      <EntryForm entries={entries} setEntries={setEntries} />
       <Entries entries={entries} />
     </>
   );
