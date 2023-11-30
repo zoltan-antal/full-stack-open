@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Patient, Diagnosis } from '../types';
 import patientService from '../services/patients';
+import EntryCard from './EntryCard';
 
 interface PatientPageProps {
   diagnoses: Diagnosis[];
@@ -20,7 +21,7 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
     fetchPatient();
   }, [id]);
 
-  if (!patient) {
+  if (!patient || !diagnoses) {
     return <div>loading...</div>;
   }
 
@@ -35,20 +36,11 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
         occupation: {patient.occupation}
       </p>
       <h3>entries</h3>
-      {patient.entries.map((entry) => (
-        <div>
-          <p>
-            {entry.date} <em>{entry.description}</em>
-          </p>
-          <ul>
-            {entry.diagnosisCodes?.map((code) => (
-              <li>
-                {code} {diagnoses.find((d) => d.code === code)!.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        {patient.entries.map((entry) => (
+          <EntryCard entry={entry} diagnoses={diagnoses} />
+        ))}
+      </div>
     </div>
   );
 };
