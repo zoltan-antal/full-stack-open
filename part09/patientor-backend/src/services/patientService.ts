@@ -4,13 +4,15 @@ import {
   PatientEntry,
   NewPatientEntry,
   NonSensitivePatientEntry,
+  NewEntry,
+  Entry,
 } from '../types';
 
-const getEntries = (): PatientEntry[] => {
+const getPatients = (): PatientEntry[] => {
   return patients;
 };
 
-const getNonSensitiveEntries = (): NonSensitivePatientEntry[] => {
+const getNonSensitivePatients = (): NonSensitivePatientEntry[] => {
   return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
     id,
     name,
@@ -20,7 +22,7 @@ const getNonSensitiveEntries = (): NonSensitivePatientEntry[] => {
   }));
 };
 
-const getEntry = (id: string): PatientEntry => {
+const getPatient = (id: string): PatientEntry => {
   const patient = patients.find((patient) => patient.id === id);
   if (!patient) {
     throw new Error('Patient does not exist with id: ' + id);
@@ -28,7 +30,7 @@ const getEntry = (id: string): PatientEntry => {
   return patient;
 };
 
-const addEntry = (entry: NewPatientEntry): PatientEntry => {
+const addPatient = (entry: NewPatientEntry): PatientEntry => {
   const newPatientEntry = {
     ...entry,
     id: uuidv4(),
@@ -38,4 +40,25 @@ const addEntry = (entry: NewPatientEntry): PatientEntry => {
   return newPatientEntry;
 };
 
-export default { getEntries, getNonSensitiveEntries, getEntry, addEntry };
+const addEntry = (id: PatientEntry['id'], entry: NewEntry): Entry => {
+  const newEntry = {
+    ...entry,
+    id: uuidv4(),
+  };
+
+  patients.forEach((patient) => {
+    if (patient.id === id) {
+      patient.entries.push(newEntry);
+    }
+  });
+
+  return newEntry;
+};
+
+export default {
+  getPatients,
+  getNonSensitivePatients,
+  getPatient,
+  addPatient,
+  addEntry,
+};
