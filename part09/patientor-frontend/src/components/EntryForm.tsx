@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { EntryFormValues, Patient } from '../types';
 import patientService from '../services/patients';
 
@@ -6,12 +7,14 @@ interface EntryFormProps {
   setEntryFormStatus: React.Dispatch<React.SetStateAction<'open' | 'closed'>>;
   patient: Patient | null;
   setPatient: React.Dispatch<React.SetStateAction<Patient | null>>;
+  createErrorMessage: (message: string) => void;
 }
 
 const EntryForm = ({
   setEntryFormStatus,
   patient,
   setPatient,
+  createErrorMessage,
 }: EntryFormProps) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
@@ -19,24 +22,37 @@ const EntryForm = ({
   const [healthCheckRating, setHealthCheckRating] = useState('');
   const [diagnosisCodes, setDiagnosisCodes] = useState('');
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
     const newEntry: EntryFormValues = {
       type: 'HealthCheck',
-      description,
+      description: description,
       date,
       specialist,
       healthCheckRating: Number(healthCheckRating),
-      diagnosisCodes: diagnosisCodes.split(', '),
+      ...(diagnosisCodes ? { diagnosisCodes: diagnosisCodes.split(', ') } : {}),
     };
-    const returnedEntry = await patientService.addEntry(patient!.id, newEntry);
-
-    setPatient({ ...patient!, entries: [...patient!.entries, returnedEntry] });
-
-    setDescription('');
-    setDate('');
-    setSpecialist('');
-    setHealthCheckRating('');
-    setDiagnosisCodes('');
+    try {
+      const returnedEntry = await patientService.addEntry(
+        patient!.id,
+        newEntry
+      );
+      setPatient({
+        ...patient!,
+        entries: [...patient!.entries, returnedEntry],
+      });
+      setDescription('');
+      setDate('');
+      setSpecialist('');
+      setHealthCheckRating('');
+      setDiagnosisCodes('');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        createErrorMessage(error.response?.data);
+      } else {
+        createErrorMessage('An unknown error has ocurred.');
+      }
+    }
   };
 
   return (
@@ -55,6 +71,7 @@ const EntryForm = ({
           <input
             type="text"
             value={description}
+            required
             onChange={(e) => setDescription(e.target.value)}
           />
         </label>
@@ -63,6 +80,7 @@ const EntryForm = ({
           <input
             type="text"
             value={date}
+            required
             onChange={(e) => setDate(e.target.value)}
           />
         </label>
@@ -71,6 +89,7 @@ const EntryForm = ({
           <input
             type="text"
             value={specialist}
+            required
             onChange={(e) => setSpecialist(e.target.value)}
           />
         </label>
@@ -79,6 +98,7 @@ const EntryForm = ({
           <input
             type="text"
             value={healthCheckRating}
+            required
             onChange={(e) => setHealthCheckRating(e.target.value)}
           />
         </label>

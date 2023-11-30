@@ -14,6 +14,7 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
   const [entryFormStatus, setEntryFormStatus] = useState<'open' | 'closed'>(
     'closed'
   );
+  const [errorMessage, setErrorMessage] = useState('');
 
   const id = useParams().id as string;
 
@@ -25,7 +26,14 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
     fetchPatient();
   }, [id]);
 
-  if (!patient || !diagnoses) {
+  const createErrorMessage = (message: string) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 5000);
+  };
+
+  if (!patient || !diagnoses || diagnoses.length === 0) {
     return <div>loading...</div>;
   }
 
@@ -39,6 +47,7 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
         <br />
         occupation: {patient.occupation}
       </p>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       {entryFormStatus === 'closed' && (
         <button onClick={() => setEntryFormStatus('open')}>
           add new entry
@@ -49,6 +58,7 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
           setEntryFormStatus={setEntryFormStatus}
           patient={patient}
           setPatient={setPatient}
+          createErrorMessage={createErrorMessage}
         />
       )}
       <h3>entries</h3>
