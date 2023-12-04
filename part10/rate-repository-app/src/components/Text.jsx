@@ -13,7 +13,8 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
   },
   colorPrimary: {
-    color: theme.colors.primary,
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.primaryText,
   },
   colorAppbar: {
     color: theme.colors.appBarText,

@@ -3,8 +3,11 @@ const theme = {
     textPrimary: '#24292e',
     textSecondary: '#586069',
     primary: '#0366d6',
+    primaryText: '#ffffff',
     appBarBackground: '#24292e',
     appBarText: '#ffffff',
+    background: '#e1e4e8',
+    cardBackground: '#ffffff',
   },
   fontSizes: {
     body: 14,
