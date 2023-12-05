@@ -8,6 +8,7 @@ const theme = {
     appBarText: '#ffffff',
     background: '#e1e4e8',
     cardBackground: '#ffffff',
+    lightBorder: '#b0b0b0',
   },
   fontSizes: {
     body: 14,
