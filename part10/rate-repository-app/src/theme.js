@@ -9,6 +9,7 @@ const theme = {
     background: '#e1e4e8',
     cardBackground: '#ffffff',
     lightBorder: '#b0b0b0',
+    error: '#d73a4a',
   },
   fontSizes: {
     body: 14,

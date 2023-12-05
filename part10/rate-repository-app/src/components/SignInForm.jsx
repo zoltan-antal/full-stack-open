@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     gap: 15,
     padding: 15,
+    backgroundColor: theme.colors.cardBackground,
   },
   button: {
     display: 'flex',
