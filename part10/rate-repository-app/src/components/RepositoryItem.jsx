@@ -1,7 +1,8 @@
-import { Image, StyleSheet, View } from 'react-native';
-import theme from '../../theme';
-import Text from '../Text';
-import abbreviateThousands from './abbreviateThousands';
+import { Image, StyleSheet, View, Pressable } from 'react-native';
+import * as Linking from 'expo-linking';
+import theme from '../theme';
+import Text from './Text';
+import abbreviateThousands from '../utils/abbreviateThousands';
 
 const styles = StyleSheet.create({
   container: {
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const RepositoryItem = ({ item }) => {
+const RepositoryItem = ({ item, repositoryView }) => {
   return (
     <View style={styles.container} testID="repositoryItem">
       <View style={styles.main}>
@@ -56,27 +57,38 @@ const RepositoryItem = ({ item }) => {
           <Text fontWeight={'bold'}>
             {abbreviateThousands(item.stargazersCount)}
           </Text>
-          <Text>Stars</Text>
+          <Text color={'textSecondary'}>Stars</Text>
         </View>
         <View style={styles.stat}>
           <Text fontWeight={'bold'}>
             {abbreviateThousands(item.forksCount)}
           </Text>
-          <Text>Forks</Text>
+          <Text color={'textSecondary'}>Forks</Text>
         </View>
         <View style={styles.stat}>
           <Text fontWeight={'bold'}>
             {abbreviateThousands(item.reviewCount)}
           </Text>
-          <Text>Reviews</Text>
+          <Text color={'textSecondary'}>Reviews</Text>
         </View>
         <View style={styles.stat}>
           <Text fontWeight={'bold'}>
             {abbreviateThousands(item.ratingAverage)}
           </Text>
-          <Text>Rating</Text>
+          <Text color={'textSecondary'}>Rating</Text>
         </View>
       </View>
+      {repositoryView && (
+        <Pressable onPress={() => Linking.openURL(item.url)}>
+          <Text
+            color={'primary'}
+            fontWeight={'bold'}
+            style={{ padding: 15, borderRadius: 5, textAlign: 'center' }}
+          >
+            Open in GitHub
+          </Text>
+        </Pressable>
+      )}
     </View>
   );
 };

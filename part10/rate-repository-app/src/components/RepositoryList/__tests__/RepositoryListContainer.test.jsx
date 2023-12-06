@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react-native';
 import RepositoryListContainer from '../RepositoryListContainer';
-import abbreviateThousands from '../abbreviateThousands';
+import abbreviateThousands from '../../../utils/abbreviateThousands';
 
 describe('RepositoryList', () => {
   describe('RepositoryListContainer', () => {
