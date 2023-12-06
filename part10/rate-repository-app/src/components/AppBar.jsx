@@ -20,6 +20,9 @@ const AppBar = () => {
     <View style={styles.container}>
       <ScrollView horizontal>
         <AppBarTab text={'Repositories'} route={'/'} />
+        {!loading && me && (
+          <AppBarTab text={'Create a review'} route={'/createReview'} />
+        )}
         {!loading && !me && <AppBarTab text={'Sign in'} route={'/signIn'} />}
         {!loading && me && <AppBarTab text={'Sign out'} route={'/signOut'} />}
       </ScrollView>
