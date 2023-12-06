@@ -1,6 +1,7 @@
 import { Image, StyleSheet, View } from 'react-native';
-import theme from '../theme';
-import Text from './Text';
+import theme from '../../theme';
+import Text from '../Text';
+import abbreviateThousands from './abbreviateThousands';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,16 +36,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const abbreviateThousands = (value) => {
-  if (value < 1000) {
-    return value;
-  }
-  return Math.round(value / 100) / 10 + 'k';
-};
-
 const RepositoryItem = ({ item }) => {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="repositoryItem">
       <View style={styles.main}>
         <Image style={styles.image} source={{ uri: item.ownerAvatarUrl }} />
         <View style={styles.info}>
