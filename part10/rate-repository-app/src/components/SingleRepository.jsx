@@ -22,13 +22,18 @@ const ItemSeparator = () => {
 const SingleRepository = () => {
   const id = useParams().id;
   const { repository, loading } = useRepository(id);
-  const { reviews } = useReviews(id);
+  const { reviews, fetchMore } = useReviews({ first: 4, id });
 
   if (loading) {
     return null;
   }
 
   const reviewNodes = reviews ? reviews.edges.map((edge) => edge.node) : [];
+
+  const onEndReach = () => {
+    fetchMore();
+    console.log('You have reached the end of the list');
+  };
 
   return (
     <FlatList
@@ -44,6 +49,8 @@ const SingleRepository = () => {
           <ItemSeparator />
         </>
       )}
+      onEndReached={onEndReach}
+      onEndReachedThreshold={0.5}
     />
   );
 };

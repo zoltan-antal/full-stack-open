@@ -43,13 +43,20 @@ export const GET_REPOSITORY = gql`
 `;
 
 export const GET_REVIEWS = gql`
-  query getQueriesByRepositoryId($id: ID!) {
+  query getQueriesByRepositoryId($first: Int, $after: String, $id: ID!) {
     repository(id: $id) {
-      reviews {
+      reviews(first: $first, after: $after) {
+        totalCount
         edges {
           node {
             ...ReviewFields
           }
+          cursor
+        }
+        pageInfo {
+          endCursor
+          startCursor
+          hasNextPage
         }
       }
     }
