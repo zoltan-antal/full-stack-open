@@ -13,7 +13,7 @@ const ItemSeparator = () => {
 };
 
 const MyReviews = () => {
-  const { me, loading } = useMe({ includeReviews: true });
+  const { me, loading, refetch } = useMe({ includeReviews: true });
 
   if (loading) {
     return null;
@@ -26,7 +26,7 @@ const MyReviews = () => {
       data={reviewNodes}
       ItemSeparatorComponent={ItemSeparator}
       renderItem={({ item }) => (
-        <ReviewItem review={item} title={'repository'} />
+        <ReviewItem review={item} mode={'user'} refetch={refetch} />
       )}
       keyExtractor={({ id }) => id}
     />
