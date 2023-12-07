@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-native';
+import { useDebounce } from 'use-debounce';
 import useRepositories from '../../hooks/useRepositories';
 import RepositoryListContainer from './RepositoryListContainer';
 
 const RepositoryList = () => {
   const [sortMode, setSortMode] = useState('latest');
-  const { repositories } = useRepositories(
-    (() => {
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchKeywordDebounced] = useDebounce(searchKeyword, 500);
+  const { repositories } = useRepositories({
+    sortMode: (() => {
       switch (sortMode) {
         case 'latest':
           return { orderBy: 'CREATED_AT', orderDirection: 'DESC' };
@@ -20,8 +23,9 @@ const RepositoryList = () => {
         default:
           return {};
       }
-    })()
-  );
+    })(),
+    searchKeyword: searchKeywordDebounced,
+  });
   const navigate = useNavigate();
 
   return (
@@ -30,6 +34,8 @@ const RepositoryList = () => {
       navigate={navigate}
       sortMode={sortMode}
       setSortMode={setSortMode}
+      searchKeyword={searchKeyword}
+      setSearchKeyword={setSearchKeyword}
     />
   );
 };
