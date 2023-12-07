@@ -24,6 +24,7 @@ const AppBar = () => {
           <AppBarTab text={'Create a review'} route={'/createReview'} />
         )}
         {!loading && !me && <AppBarTab text={'Sign in'} route={'/signIn'} />}
+        {!loading && !me && <AppBarTab text={'Sign up'} route={'/signUp'} />}
         {!loading && me && <AppBarTab text={'Sign out'} route={'/signOut'} />}
       </ScrollView>
     </View>
