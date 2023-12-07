@@ -7,12 +7,10 @@ const useCreateReview = () => {
   const createReview = async ({ ownerName, repositoryName, rating, text }) => {
     const { data } = await mutate({
       variables: {
-        review: {
-          ownerName,
-          repositoryName,
-          rating: Number(rating),
-          ...(text ? { text } : {}),
-        },
+        ownerName,
+        repositoryName,
+        rating: Number(rating),
+        text,
       },
     });
     return { data };

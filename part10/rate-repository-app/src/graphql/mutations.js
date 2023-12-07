@@ -17,8 +17,20 @@ export const SIGN_UP = gql`
 `;
 
 export const CREATE_REVIEW = gql`
-  mutation createReview($review: CreateReviewInput) {
-    createReview(review: $review) {
+  mutation createReview(
+    $ownerName: String!
+    $repositoryName: String!
+    $rating: Int!
+    $text: String
+  ) {
+    createReview(
+      review: {
+        ownerName: $ownerName
+        repositoryName: $repositoryName
+        rating: $rating
+        text: $text
+      }
+    ) {
       repositoryId
     }
   }
