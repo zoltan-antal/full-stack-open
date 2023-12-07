@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { REPOSITORY_DETAILS } from './fragments';
+import { REPOSITORY_FIELDS, REVIEW_FIELDS } from './fragments';
 
 export const GET_REPOSITORIES = gql`
   query getRepositories(
@@ -14,21 +14,21 @@ export const GET_REPOSITORIES = gql`
     ) {
       edges {
         node {
-          ...RepositoryDetails
+          ...RepositoryFields
         }
       }
     }
   }
-  ${REPOSITORY_DETAILS}
+  ${REPOSITORY_FIELDS}
 `;
 
 export const GET_REPOSITORY = gql`
   query getRepositoryById($id: ID!) {
     repository(id: $id) {
-      ...RepositoryDetails
+      ...RepositoryFields
     }
   }
-  ${REPOSITORY_DETAILS}
+  ${REPOSITORY_FIELDS}
 `;
 
 export const GET_REVIEWS = gql`
@@ -37,26 +37,28 @@ export const GET_REVIEWS = gql`
       reviews {
         edges {
           node {
-            id
-            text
-            rating
-            createdAt
-            user {
-              id
-              username
-            }
+            ...ReviewFields
           }
         }
       }
     }
   }
+  ${REVIEW_FIELDS}
 `;
 
 export const ME = gql`
-  query {
+  query me($includeReviews: Boolean = false) {
     me {
       id
       username
+      reviews @include(if: $includeReviews) {
+        edges {
+          node {
+            ...ReviewFields
+          }
+        }
+      }
     }
   }
+  ${REVIEW_FIELDS}
 `;

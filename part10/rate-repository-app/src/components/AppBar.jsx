@@ -23,6 +23,9 @@ const AppBar = () => {
         {!loading && me && (
           <AppBarTab text={'Create a review'} route={'/createReview'} />
         )}
+        {!loading && me && (
+          <AppBarTab text={'My reviews'} route={'/myReviews'} />
+        )}
         {!loading && !me && <AppBarTab text={'Sign in'} route={'/signIn'} />}
         {!loading && !me && <AppBarTab text={'Sign up'} route={'/signUp'} />}
         {!loading && me && <AppBarTab text={'Sign out'} route={'/signOut'} />}

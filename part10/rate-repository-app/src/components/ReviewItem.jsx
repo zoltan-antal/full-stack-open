@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import Text from './Text';
 import theme from '../theme';
 
-const ReviewItem = ({ review }) => {
+const ReviewItem = ({ review, title }) => {
   const scoreContainerSize = 45;
   const styles = StyleSheet.create({
     container: {
@@ -50,7 +50,20 @@ const ReviewItem = ({ review }) => {
         </Text>
       </View>
       <View style={styles.info}>
-        <Text fontWeight={'bold'}>{review.user.username}</Text>
+        <Text fontWeight={'bold'}>
+          {(() => {
+            switch (title) {
+              case 'user':
+                return review.user.username;
+
+              case 'repository':
+                return review.repository.fullName;
+
+              default:
+                return null;
+            }
+          })()}
+        </Text>
         <Text color="textSecondary">
           {createdAt.toLocaleString(undefined, {
             year: 'numeric',
