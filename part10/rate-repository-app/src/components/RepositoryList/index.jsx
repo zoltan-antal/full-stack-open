@@ -8,7 +8,8 @@ const RepositoryList = () => {
   const [sortMode, setSortMode] = useState('latest');
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchKeywordDebounced] = useDebounce(searchKeyword, 500);
-  const { repositories } = useRepositories({
+  const { repositories, fetchMore } = useRepositories({
+    first: 8,
     sortMode: (() => {
       switch (sortMode) {
         case 'latest':
@@ -28,10 +29,15 @@ const RepositoryList = () => {
   });
   const navigate = useNavigate();
 
+  const onEndReach = () => {
+    fetchMore();
+  };
+
   return (
     <RepositoryListContainer
       repositories={repositories}
       navigate={navigate}
+      onEndReach={onEndReach}
       sortMode={sortMode}
       setSortMode={setSortMode}
       searchKeyword={searchKeyword}
