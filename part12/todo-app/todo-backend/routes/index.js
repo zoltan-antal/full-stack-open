@@ -19,9 +19,10 @@ router.get('/', async (req, res) => {
 
 /* GET added todos counter. */
 router.get('/statistics', async (req, res) => {
-  console.log('getting added_todos');
   const todoCount = Number(await redis.getAsync('added_todos'));
-  console.log(todoCount);
+  if (!todoCount) {
+    await redis.setAsync('added_todos', 0);
+  }
   res.send({ added_todos: todoCount ? todoCount : 0 });
 });
 
