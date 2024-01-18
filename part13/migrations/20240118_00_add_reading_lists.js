@@ -3,13 +3,17 @@ const { DataTypes } = require('sequelize');
 module.exports = {
   up: async ({ context: queryInterface }) => {
     await queryInterface.createTable('reading_list', {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
       user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: 'users', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
-        primaryKey: true,
       },
       blog_id: {
         type: DataTypes.INTEGER,
@@ -17,7 +21,6 @@ module.exports = {
         references: { model: 'blogs', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
-        primaryKey: true,
       },
       is_read: {
         type: DataTypes.BOOLEAN,
